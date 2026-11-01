@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "typhon-ids"
+version = "1.0.0"
+description = "A Continuous-Time Neuromorphic-Tensor Hybrid Intrusion Detection System for Adaptive DoS/DDoS Mitigation"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Arnav Inamdar" },
+    { name = "Kaviish Maniar" },
+    { name = "Basant Tiwari" }
+]
+keywords = [
+    "cybersecurity",
+    "ddos-detection",
+    "deep-learning",
+    "graph-neural-networks",
+    "kolmogorov-arnold-networks",
+    "reinforcement-learning",
+    "tensor-networks"
+]
+dependencies = [
+    "pandas>=2.0.3",
+    "numpy>=1.25.2",
+    "scikit-learn>=1.3.0",
+    "xgboost>=2.0.0",
+    "torch>=2.0.1",
+    "pyyaml>=6.0.1",
+    "scapy>=2.5.0",
+    "scipy>=1.11.0",
+    "psutil>=5.9.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "flake8>=6.0.0",
+    "black>=23.7.0"
+]
+
+[project.scripts]
+typhon = "main:main"

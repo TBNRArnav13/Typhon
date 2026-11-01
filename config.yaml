@@ -1,0 +1,155 @@
+# ============================================================================
+# Typhon IDS — Configuration
+# Next-Generation Continuous-Time Neuromorphic-Tensor Hybrid IDS
+# ============================================================================
+
+# Auto-configuration based on detected hardware resources
+auto_configure: true
+
+# Directories
+directories:
+  models: "models_saved/"
+  outputs: "outputs/"
+  reports: "reports/"
+  logs: "outputs/logs/"
+
+# PCAP Feature Extraction Engine
+feature_extraction:
+  flow_idle_timeout_seconds: 120
+  flow_active_timeout_seconds: 600
+  handle_tso_lro: true
+  mtu_split_bytes: 1500
+
+# Dataset Paths
+datasets:
+  benign: "Dataset/Traning/1_Million_Benign.csv"
+  dos: "Dataset/PolishedDos/"
+  training_combined: "Dataset/Traning/Final_70_30_Dataset.csv"
+  test_dir: "Dataset/Testing CIC/"
+
+# Data Loading
+data_loading:
+  max_rows_per_file: auto   # 'auto' = RAM-aware dynamic estimation
+  max_file_size_mb: 10240
+  validation_split: 0.2
+
+# ============================================================================
+# Component 2: CT-DGNN (Continuous-Time Dynamic Graph Neural Network)
+# ============================================================================
+ct_dgnn:
+  node_dim: 16
+  edge_dim: 8
+  hidden_dim: 32
+  learning_rate: 0.001
+  epochs: 35
+  batch_size: 64
+
+# ============================================================================
+# Component 3: ST3 (Spatio-Temporal Tensor-Transformer)
+# ============================================================================
+st3:
+  # Spatial (KAN) Autoencoder branch
+  kan:
+    n_knots: 8
+    latent_dim: 8
+  
+  # Temporal (RoPE Transformer) branch
+  transformer:
+    d_model: 64
+    nhead: 4
+    num_layers: 2
+    dim_feedforward: 128
+    dropout: 0.1
+    tcn_channels: 32
+  
+  # Correlation (MPS Tensor) branch
+  qtn:
+    bond_dim: 8
+    phys_dim: 2
+    n_sites: 8
+
+  # Common Unsupervised Training
+  learning_rate: 0.0003
+  epochs: 40
+  batch_size: 64
+  
+  # EVT Thresholding
+  evt:
+    tail_percentile: 90
+    sensitivity_sigma: 3.0
+
+# ============================================================================
+# Component 4: Supervised XGBoost Classifier & DQN RL-Fusion Engine
+# ============================================================================
+xgboost:
+  max_depth: 10
+  learning_rate: 0.1
+  n_estimators: 500
+  objective: "binary:logistic"
+  subsample: 0.8
+  colsample_bytree: 0.8
+  tree_method: "auto"
+
+rl_fusion:
+  enabled: true
+  state_dim: 6
+  n_actions: 4
+  learning_rate: 0.0005
+  gamma: 0.99
+  epsilon_start: 1.0
+  epsilon_end: 0.05
+  epsilon_decay: 0.995
+  memory_capacity: 10000
+  batch_size: 64
+
+# C2E2: Confidence-Calibrated Early Exiting
+c2e2:
+  enabled: true
+  threshold: 0.995
+
+# Concept Drift Detection
+drift_detection:
+  enabled: true
+  js_threshold: 0.5
+  n_bins: 50
+
+# ============================================================================
+# Selected 33 Features
+# ============================================================================
+selected_features:
+  - "flow duration"
+  - "total fwd packets"
+  - "total backward packets"
+  - "total length of fwd packets"
+  - "total length of bwd packets"
+  - "fwd packet length max"
+  - "fwd packet length min"
+  - "fwd packet length mean"
+  - "fwd packet length std"
+  - "bwd packet length max"
+  - "bwd packet length min"
+  - "bwd packet length mean"
+  - "bwd packet length std"
+  - "flow bytes/s"
+  - "flow packets/s"
+  - "flow iat mean"
+  - "flow iat std"
+  - "flow iat max"
+  - "flow iat min"
+  - "fwd iat total"
+  - "fwd iat mean"
+  - "fwd iat std"
+  - "fwd iat max"
+  - "fwd iat min"
+  - "bwd iat total"
+  - "bwd iat mean"
+  - "bwd iat std"
+  - "bwd iat max"
+  - "bwd iat min"
+  - "fwd psh flags"
+  - "bwd psh flags"
+  - "fwd urg flags"
+  - "bwd urg flags"
+
+thresholds:
+  malicious_file_ratio: 0.30

@@ -1,0 +1,3233 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+\usepackage{titletoc}
+\usepackage{xcolor}
+
+% ============================================================
+% Color Definitions
+% ============================================================
+\definecolor{darkblue}{RGB}{0, 51, 102}
+\definecolor{lightgray}{RGB}{220, 220, 220}
+
+% ============================================================
+% Hyperlink Styling
+% ============================================================
+\hypersetup{
+    colorlinks=true,
+    linkcolor=darkblue,
+    urlcolor=darkblue,
+    citecolor=darkblue,
+    pdfauthor={Arnav Inamdar},
+    pdftitle={Unified DoS/DDoS Detection System — LLA Documentation Booklet},
+    pdfsubject={Low Level Architecture Documentation},
+}
+
+% ============================================================
+% Global List Settings
+% ============================================================
+\setlist[itemize]{leftmargin=*, noitemsep, topsep=4pt}
+\setlist[enumerate]{leftmargin=*, noitemsep, topsep=4pt}
+
+% ============================================================
+% Header / Footer
+% ============================================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textit{Unified DoS/DDoS Detection System}}
+\fancyhead[R]{\small\textit{LLA Documentation Booklet}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ============================================================
+% Chapter / Section Formatting
+% ============================================================
+\titleformat{\chapter}[display]
+    {\normalfont\huge\bfseries\color{darkblue}}
+    {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-20pt}{20pt}
+
+% ============================================================
+% TOC – Depth & Formatting
+% ============================================================
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+% Dotted leaders for all TOC levels
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftsubsecleader}{\cftdotfill{\cftdotsep}}
+
+% ============================================================
+% Part command redefinition (for logical grouping in TOC)
+% ============================================================
+\renewcommand{\thepart}{\Roman{part}}
+
+% ============================================================
+\begin{document}
+
+% ============================================================
+%                       COVER PAGE
+% ============================================================
+\begin{titlepage}
+    \centering
+
+    \vspace*{1cm}
+
+    \rule{\textwidth}{1.5pt}\\[0.4cm]
+    {\Huge \textbf{Unified DoS/DDoS Detection System}}\\[0.3cm]
+    {\Large Using XGBoost + Kitsune Hybrid Architecture}\\[0.2cm]
+    \rule{\textwidth}{1.5pt}
+
+    \vspace{1.5cm}
+
+    {\LARGE \textbf{Low Level Architecture (LLA)}}\\[0.2cm]
+    {\LARGE \textbf{Documentation Booklet}}
+
+    \vspace{2cm}
+
+    \begin{tabular}{r l}
+        \textbf{Project Title}  & : Unified DoS/DDoS Detection System \\[4pt]
+        \textbf{Subtitle}       & : Hybrid ML Approach for Network Threat \\
+                                & \quad Detection Using XGBoost \& Kitsune \\[8pt]
+        \textbf{Academic Year}  & : 2025--2026 \quad|\quad Semester IV \\[4pt]
+        \textbf{Subject}        & : Project Based Learning (PBL) \\[12pt]
+        \textbf{Prepared By}    & : Arnav Inamdar \\[4pt]
+        \textbf{Roll No.}       & : [Roll Number] \\[4pt]
+        \textbf{Branch}         & : [Branch Name] \\[4pt]
+        \textbf{Division}       & : [Division] \\[12pt]
+        \textbf{Guide}          & : [Faculty Guide Name] \\[4pt]
+        \textbf{Department}     & : [Department Name] \\[4pt]
+        \textbf{Institute}      & : [Institute / College Name] \\[4pt]
+        \textbf{University}     & : [University Name] \\[12pt]
+        \textbf{Date}           & : February 2026 \\[4pt]
+        \textbf{Version}        & : 1.0 \\
+    \end{tabular}
+
+    \vfill
+
+    \rule{\textwidth}{1.5pt}
+\end{titlepage}
+
+% ============================================================
+%                    TABLE OF CONTENTS
+% ============================================================
+\pagenumbering{roman}
+
+\tableofcontents
+\clearpage
+
+\pagenumbering{arabic}
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                    PART I — OVERVIEW
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Overview \& Introduction}
+
+% ============================================================
+\chapter{Abstract}
+% ============================================================
+
+\section{Problem Statement}
+
+The increasing prevalence and sophistication of Denial of Service (DoS) and Distributed Denial of Service (DDoS) attacks represent one of the most critical challenges in modern network security. These attacks aim to overwhelm target systems, networks, or services by flooding them with illegitimate traffic, rendering them unavailable to legitimate users. Traditional Intrusion Detection Systems (IDS) rely on either \textbf{signature-based detection} or \textbf{pure anomaly detection}, each of which suffers from fundamental limitations:
+
+\begin{itemize}
+    \item \textbf{Signature-based systems} (supervised models) depend entirely on labeled training data. They achieve high precision for known attack patterns but are inherently blind to novel, previously unseen attacks — commonly referred to as \textbf{zero-day threats}.
+    \item \textbf{Anomaly-based systems} (unsupervised models) learn the statistical profile of normal traffic and flag deviations. While capable of detecting zero-day attacks, they suffer from elevated \textbf{false positive rates}, particularly in environments with bursty or non-standard but legitimate traffic patterns (e.g., DHCP storms, broadcast protocols, flash crowds).
+\end{itemize}
+
+No single-paradigm approach adequately addresses the full spectrum of network threats encountered in real-world deployments. This creates a critical gap in detection capability that this project aims to fill.
+
+\section{Proposed Solution}
+
+This project presents the \textbf{Unified DoS/DDoS Detection System}, a hybrid machine learning framework that combines the strengths of both supervised and unsupervised learning paradigms into a single, cohesive detection pipeline. The system integrates:
+
+\begin{enumerate}
+    \item \textbf{XGBoost} — A gradient-boosted decision tree classifier trained on labeled network flow data. It provides high-precision, high-confidence detection of \textbf{10 known DoS/DDoS attack types} including DNS Amplification, LDAP Amplification, MSSQL Amplification, NetBIOS Amplification, NTP Amplification, SNMP Amplification, SSDP Amplification, SYN Flood, TFTP Amplification, and UDP Flood.
+
+    \item \textbf{Kitsune} — An autoencoder-based anomaly detection model trained exclusively on benign (clean) traffic. It learns the statistical distribution of normal network behavior and flags flows whose reconstruction error (RMSE) exceeds a dynamically computed threshold. This enables detection of \textbf{zero-day attacks} and novel threat patterns.
+
+    \item \textbf{Hybrid Decision Engine} — A purpose-built orchestration layer that fuses the outputs of both models using hierarchical decision logic, heuristic safety overrides (e.g., safe broadcast detection), and confidence scoring to produce final verdicts with detailed reasoning.
+\end{enumerate}
+
+The system accepts input in multiple formats — \textbf{CSV} (flow-based datasets), \textbf{PCAP}, and \textbf{PCAPNG} (raw packet captures) — and produces structured outputs including JSON prediction files, a Markdown summary report, and technical debug logs.
+
+\section{Key Contributions}
+
+The key contributions of this project are as follows:
+
+\begin{enumerate}
+    \item \textbf{Hybrid Detection Architecture:} A novel fusion of supervised classification (XGBoost) and unsupervised anomaly detection (Kitsune) that overcomes the limitations of single-model approaches. The hierarchical decision engine ensures that known attacks are classified with high confidence while unknown anomalies are still detected.
+
+    \item \textbf{Unified Feature Set:} A standardized set of \textbf{33 network flow features} consistently extracted from both CSV and PCAP inputs, covering packet volume, payload size dynamics, inter-arrival timing, TCP flag behavior, and flow rates. This ensures model compatibility across input formats.
+
+    \item \textbf{Heuristic Safety Layer:} Implementation of protocol-aware heuristic overrides that reduce false positives by identifying safe network patterns such as broadcast traffic (destination IP ending in .255), multicast traffic, and known benign protocols (NetBIOS, SSDP).
+
+    \item \textbf{Multi-Format Input Support:} Seamless processing of CSV datasets and raw PCAP/PCAPNG packet captures through an automated input handling and feature extraction pipeline using Scapy.
+
+    \item \textbf{Comprehensive Reporting:} Generation of structured, timestamped output directories containing categorized prediction files (benign, DoS/DDoS, anomaly), a Markdown summary report with detection statistics, and detailed technical logs.
+
+    \item \textbf{GPU Acceleration:} Support for CUDA-enabled GPU acceleration for both XGBoost (via \texttt{gpu\_hist} tree method) and Kitsune (via PyTorch CUDA tensors), enabling efficient processing of large-scale datasets.
+\end{enumerate}
+
+\section{Target Users}
+
+The system is designed for the following user categories:
+
+\begin{itemize}
+    \item \textbf{Cybersecurity Researchers:} For evaluating hybrid detection methodologies and benchmarking against standard datasets such as CIC-IDS and CIC-DDoS.
+    \item \textbf{SOC (Security Operations Center) Analysts:} For analyzing captured network traffic files to identify potential DoS/DDoS activity and anomalous behavior patterns.
+    \item \textbf{Network Security Engineers:} For integrating automated threat detection capabilities into existing security infrastructure and conducting post-incident forensic analysis.
+    \item \textbf{Academic Evaluators:} For studying the effectiveness of hybrid supervised-unsupervised machine learning approaches in the domain of network intrusion detection.
+\end{itemize}
+
+
+% ============================================================
+\chapter{Introduction}
+% ============================================================
+
+\section{Background \& Motivation}
+
+The global dependence on internet-connected services has made network infrastructure a prime target for cyberattacks. Among the most prevalent and disruptive of these are \textbf{Denial of Service (DoS)} and \textbf{Distributed Denial of Service (DDoS)} attacks. According to industry reports, the frequency and scale of DDoS attacks have grown exponentially, with volumetric attacks exceeding terabits per second of traffic. These attacks can cripple critical services — from financial institutions and healthcare systems to government portals and educational networks.
+
+The motivation for this project stems from the fundamental limitations observed in existing detection approaches:
+
+\begin{enumerate}
+    \item \textbf{Supervised-only systems} such as Random Forest, SVM, and XGBoost classifiers achieve excellent accuracy on known attack signatures but fail to generalize to novel attack vectors. As attackers continuously evolve their techniques, reliance on labeled training data creates an inherent vulnerability window.
+
+    \item \textbf{Unsupervised-only systems} such as autoencoders, clustering methods, and statistical models can detect deviations from normal behavior without requiring attack labels. However, they lack the ability to \textit{classify} what type of attack is occurring and tend to generate false alarms on legitimate but unusual traffic patterns.
+
+    \item \textbf{The hybrid gap:} While the concept of combining supervised and unsupervised approaches has been discussed in literature, practical implementations with proper decision fusion, heuristic safety layers, and production-quality reporting remain scarce.
+\end{enumerate}
+
+This project addresses these gaps by implementing a complete, end-to-end hybrid detection system that combines XGBoost for known threat classification with Kitsune for zero-day anomaly detection, unified through a purpose-built Hybrid Decision Engine.
+
+\section{Objectives of the Project}
+
+The primary objectives of this project are:
+
+\begin{enumerate}
+    \item To design and implement a \textbf{hybrid machine learning pipeline} that combines supervised classification (XGBoost) with unsupervised anomaly detection (Kitsune) for comprehensive DoS/DDoS detection.
+
+    \item To develop a \textbf{Hybrid Decision Engine} that intelligently fuses the outputs of both models using hierarchical decision logic, heuristic overrides, and confidence scoring.
+
+    \item To implement a \textbf{unified feature extraction pipeline} that processes both CSV datasets and raw PCAP/PCAPNG packet captures into a standardized set of 33 network flow features.
+
+    \item To support detection of \textbf{10 known DoS/DDoS attack types} through XGBoost while simultaneously detecting \textbf{unknown/zero-day anomalies} through Kitsune.
+
+    \item To generate \textbf{structured, interpretable outputs} including categorized JSON prediction files, Markdown summary reports, and technical debug logs.
+
+    \item To ensure \textbf{scalability and performance} through GPU acceleration support for both models, efficient memory management, and configurable processing parameters.
+
+    \item To provide a \textbf{configurable and extensible system} through a centralized YAML configuration file that controls paths, model hyperparameters, feature selection, and detection thresholds.
+\end{enumerate}
+
+\section{Scope of Work}
+
+The scope of this project encompasses the following areas:
+
+\begin{itemize}
+    \item \textbf{Data Processing:} Implementation of input validation, CSV data loading with memory management, and PCAP-to-feature extraction using Scapy. Support for bidirectional flow aggregation and 5-tuple flow identification.
+
+    \item \textbf{Model Training:} Training of the XGBoost classifier on labeled DoS/DDoS datasets (10 attack types from the CIC-DDoS2019 family) and training of the Kitsune autoencoder on clean benign traffic data for normal behavior profiling.
+
+    \item \textbf{Detection Pipeline:} End-to-end detection workflow from file input through feature extraction, dual-model inference, decision fusion, heuristic filtering, and structured output generation.
+
+    \item \textbf{Reporting:} Generation of timestamped output directories containing prediction JSON files (benign, DoS/DDoS, anomaly categories), a Markdown summary report with statistics and verdicts, and technical debug logs.
+
+    \item \textbf{Configuration:} Centralized configuration management through \texttt{config.yaml} for all system parameters including directory paths, model hyperparameters, feature selection, and detection thresholds.
+\end{itemize}
+
+\textbf{Out of Scope:} Real-time packet capture from live network interfaces, integration with external SIEM/SOAR platforms, and web-based user interface development are not included in the current version but are identified as potential future enhancements.
+
+\section{Organization of the Document}
+
+This documentation booklet is organized into \textbf{10 parts} comprising \textbf{24 chapters} and \textbf{7 appendices}, structured as follows:
+
+\begin{itemize}
+    \item \textbf{Part I — Overview \& Introduction} (Chapters 1--3): Provides the abstract, introduction, background, objectives, and a literature survey of existing detection methods.
+
+    \item \textbf{Part II — System Design \& Architecture} (Chapters 4--6): Covers the product requirements, system architecture, file hierarchy, and configuration management.
+
+    \item \textbf{Part III — Data Processing Pipeline} (Chapters 7--9): Details the input handling, feature extraction from PCAP files, and CSV data loading and preprocessing.
+
+    \item \textbf{Part IV — Machine Learning Models} (Chapters 10--12): Provides comprehensive documentation of the XGBoost classifier, Kitsune autoencoder, and Hybrid Decision Engine including architecture, training, detection, and performance.
+
+    \item \textbf{Part V — Analysis \& Research} (Chapters 13--14): Presents analytical studies on benign classification behavior and Kitsune anomaly detection mechanics.
+
+    \item \textbf{Part VI — Reporting, Output \& Operations} (Chapters 15--16): Documents the output generation system, report structure, classification categories, and verdict interpretation.
+
+    \item \textbf{Part VII — User Documentation} (Chapter 17): Provides the complete user manual including installation, usage, troubleshooting, and advanced configuration.
+
+    \item \textbf{Part VIII — System Utilities \& Infrastructure} (Chapters 18--19): Covers system utilities, analysis tools, and dataset descriptions.
+
+    \item \textbf{Part IX — Performance, Testing \& Deployment} (Chapters 20--22): Details performance benchmarks, testing methodology, accuracy metrics, and deployment options.
+
+    \item \textbf{Part X — Conclusion \& References} (Chapters 23--24): Summarizes achievements, outlines future scope, and lists all references.
+
+    \item \textbf{Appendices A--G}: Provide supplementary material including the complete feature list, configuration reference, sample outputs, flow diagrams, glossary, and abbreviations.
+\end{itemize}
+
+
+% ============================================================
+\chapter{Literature Survey}
+% ============================================================
+
+This chapter reviews existing research and methodologies in the domain of network intrusion detection, with a specific focus on DoS/DDoS attack detection using machine learning. The survey examines supervised, unsupervised, and hybrid approaches, identifies gaps in current research, and establishes the foundation for the proposed system.
+
+\section{Existing DoS/DDoS Detection Methods}
+
+DoS/DDoS detection methods can be broadly categorized into three paradigms:
+
+\subsubsection*{A. Signature-Based Detection}
+
+Signature-based (or misuse detection) systems maintain a database of known attack patterns and match incoming traffic against these signatures. Examples include Snort, Suricata, and commercial IDS appliances.
+
+\begin{itemize}
+    \item \textbf{Advantages:} High precision for known attacks, low false positive rates, computationally efficient for pattern matching.
+    \item \textbf{Limitations:} Cannot detect novel (zero-day) attacks, requires continuous signature database updates, and fails against polymorphic or obfuscated attack variants.
+\end{itemize}
+
+\subsubsection*{B. Statistical \& Threshold-Based Detection}
+
+Statistical methods monitor network traffic metrics (packet rates, byte counts, connection counts) and trigger alerts when values exceed predefined thresholds or deviate significantly from historical baselines.
+
+\begin{itemize}
+    \item \textbf{Advantages:} Simple to implement, low computational overhead, effective for volumetric attacks.
+    \item \textbf{Limitations:} Difficulty setting optimal thresholds, inability to detect low-rate or application-layer attacks, and high false positive rates during legitimate traffic spikes.
+\end{itemize}
+
+\subsubsection*{C. Machine Learning-Based Detection}
+
+Modern approaches leverage machine learning algorithms to automatically learn traffic patterns from data. These are further divided into supervised (requiring labeled data) and unsupervised (learning from unlabeled data) paradigms, which are discussed in the following sections.
+
+\section{Supervised Learning in Network Security (XGBoost)}
+
+Supervised machine learning has been widely applied to network intrusion detection, with algorithms such as Decision Trees, Random Forests, Support Vector Machines (SVM), k-Nearest Neighbors (k-NN), and Gradient Boosting Machines achieving strong results on benchmark datasets.
+
+\subsubsection*{Why XGBoost?}
+
+\textbf{XGBoost} (Extreme Gradient Boosting), proposed by Chen and Guestrin (2016), has become the algorithm of choice for many classification tasks in network security due to several advantages:
+
+\begin{enumerate}
+    \item \textbf{Ensemble Learning:} XGBoost builds an ensemble of weak learners (decision trees) sequentially, where each tree corrects the errors of the previous ones. This gradient boosting approach achieves higher accuracy than individual models.
+
+    \item \textbf{Regularization:} Built-in L1 (Lasso) and L2 (Ridge) regularization prevents overfitting, which is critical when training on network datasets that may contain imbalanced class distributions.
+
+    \item \textbf{Handling Missing Values:} XGBoost natively handles missing values in feature vectors, which occurs frequently in network flow data due to incomplete connections or packet loss.
+
+    \item \textbf{Feature Importance:} The algorithm provides built-in feature importance metrics (gain, weight, cover), enabling analysts to understand which network characteristics are most discriminative for attack detection.
+
+    \item \textbf{GPU Acceleration:} XGBoost supports GPU-accelerated training via the \texttt{gpu\_hist} tree method, enabling efficient processing of large-scale network datasets.
+
+    \item \textbf{Proven Performance:} Studies on the CIC-IDS2017 and CIC-DDoS2019 datasets have demonstrated that XGBoost achieves accuracy rates exceeding 99\% for multi-class DoS/DDoS classification.
+\end{enumerate}
+
+\subsubsection*{Limitations in Isolation}
+
+Despite its strengths, XGBoost as a standalone classifier suffers from:
+\begin{itemize}
+    \item \textbf{Dependency on labeled data:} The model can only classify attack types it has been trained on. Novel attacks that do not match learned patterns will be misclassified as benign.
+    \item \textbf{Static decision boundaries:} Once trained, the model's decision boundaries are fixed. Evolving attack patterns may gradually reduce detection accuracy over time.
+\end{itemize}
+
+\section{Unsupervised Anomaly Detection (Autoencoders / Kitsune)}
+
+Unsupervised anomaly detection approaches address the limitation of supervised methods by learning the characteristics of ``normal'' traffic without requiring attack labels. Any traffic that deviates significantly from the learned normal profile is flagged as anomalous.
+
+\subsubsection*{Autoencoder-Based Detection}
+
+Autoencoders are neural networks trained to reconstruct their input. The core principle is:
+\begin{itemize}
+    \item The network is trained exclusively on benign traffic data.
+    \item During inference, benign traffic is reconstructed accurately (low reconstruction error).
+    \item Anomalous traffic produces high reconstruction error because the model has never observed such patterns during training.
+\end{itemize}
+
+The reconstruction error is typically measured using \textbf{Root Mean Square Error (RMSE)}:
+
+\begin{equation}
+    \text{RMSE} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - x'_i)^2}
+\end{equation}
+
+A dynamic threshold $\tau$ is computed as:
+\begin{equation}
+    \tau = \mu + k \cdot \sigma
+\end{equation}
+where $\mu$ is the mean RMSE over the training set, $\sigma$ is the standard deviation, and $k$ is a configurable sensitivity factor.
+
+\subsubsection*{Kitsune: An Ensemble of Autoencoders for Network IDS}
+
+\textbf{Kitsune}, proposed by Mirsky et al. (2018), is a notable implementation of autoencoder-based network intrusion detection. The original Kitsune architecture uses an ensemble of lightweight autoencoders (KitNET) that collectively learn the normal behavior of network traffic. Key characteristics include:
+
+\begin{itemize}
+    \item \textbf{Unsupervised training:} Requires only clean benign traffic for model construction.
+    \item \textbf{Online learning capability:} Can incrementally update its model as new traffic is observed.
+    \item \textbf{Lightweight architecture:} Designed for deployment on resource-constrained devices.
+    \item \textbf{Zero-day detection:} Can flag novel attacks that deviate from learned normal patterns.
+\end{itemize}
+
+\subsubsection*{Limitations in Isolation}
+
+\begin{itemize}
+    \item \textbf{No attack classification:} Kitsune produces a binary output (Normal/Anomaly) without specifying the type or nature of the detected threat.
+    \item \textbf{False positive sensitivity:} Legitimate but bursty traffic (DHCP storms, broadcast spikes, flash crowds) may trigger false anomaly alerts.
+    \item \textbf{Threshold sensitivity:} Detection accuracy is highly dependent on the chosen threshold factor $k$. Too low a value increases false positives; too high reduces detection sensitivity.
+\end{itemize}
+
+\section{Hybrid Approaches in Intrusion Detection Systems}
+
+The concept of combining multiple detection paradigms has been explored in several research works:
+
+\begin{enumerate}
+    \item \textbf{Cascade architectures:} Systems where traffic first passes through a fast anomaly detector, and flagged traffic is subsequently analyzed by a more precise classifier. This reduces the computational burden on the classifier.
+
+    \item \textbf{Parallel architectures:} Systems where supervised and unsupervised models analyze traffic independently, and their outputs are fused using voting, weighted averaging, or rule-based logic.
+
+    \item \textbf{Ensemble methods:} Combinations of multiple models of the same paradigm (e.g., multiple classifiers) to improve robustness through diversity.
+
+    \item \textbf{Multi-stage pipelines:} Systems that apply different detection techniques at different stages of traffic processing (packet-level, flow-level, session-level).
+\end{enumerate}
+
+Notable approaches in literature include:
+\begin{itemize}
+    \item Stacked Non-symmetric Deep Autoencoders (NDAEs) for unsupervised feature learning combined with supervised classification for network intrusion detection, evaluated on NSL-KDD dataset (Shone et al., 2018).
+    \item LUCID — a lightweight CNN-based deep learning solution for practical, real-time DDoS attack detection in resource-constrained environments (Doriguzzi-Corin et al., 2020).
+    \item Development of realistic DDoS attack datasets and taxonomy covering 12+ attack types, providing standardized benchmarks for evaluating detection systems (Sharafaldin et al., 2019).
+\end{itemize}
+
+However, most existing hybrid systems focus on model-level fusion without addressing practical concerns such as \textbf{heuristic false positive reduction}, \textbf{confidence scoring}, and \textbf{interpretable verdict generation}.
+
+\section{Gaps in Existing Work}
+
+Based on the literature survey, the following gaps have been identified that this project aims to address:
+
+\begin{enumerate}
+    \item \textbf{Lack of practical decision fusion:} Most hybrid systems propose theoretical fusion strategies but lack implemented decision engines that handle edge cases, conflicting model outputs, and confidence calibration.
+
+    \item \textbf{No heuristic safety layer:} Existing systems do not incorporate domain-specific heuristics (e.g., broadcast protocol awareness, multicast detection) to reduce false positives caused by legitimate network phenomena.
+
+    \item \textbf{Limited multi-format support:} Most published systems operate on a single input format (typically CSV datasets). Support for raw PCAP files with integrated feature extraction is rare.
+
+    \item \textbf{Insufficient output interpretability:} Many systems provide only binary labels (attack/benign) without detailed reasoning, confidence scores, or categorized output files that would be useful for SOC analysts and incident responders.
+
+    \item \textbf{Missing end-to-end implementation:} While individual components (classifiers, autoencoders) have been extensively studied, complete end-to-end systems with integrated training, detection, configuration management, and reporting remain underrepresented in literature.
+\end{enumerate}
+
+The \textbf{Unified DoS/DDoS Detection System} presented in this document addresses all five gaps through a production-quality implementation that combines XGBoost classification, Kitsune anomaly detection, a hierarchical Hybrid Decision Engine with heuristic overrides, multi-format input support, and comprehensive structured reporting.
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%              PART II — SYSTEM DESIGN & ARCHITECTURE
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{System Design \& Architecture}
+
+% ============================================================
+\chapter{Product Requirements Document (PRD)}
+% ============================================================
+
+\section{Product Overview \& Purpose}
+
+The Unified DoS/DDoS Detection System is designed to provide a comprehensive, hybrid approach to network threat detection. The system combines behavior-based anomaly detection (Kitsune) with supervised classification (XGBoost) to analyze network traffic files and produce actionable security intelligence.
+
+\noindent\textbf{Purpose:}
+\begin{itemize}
+    \item Detect both known and unknown (zero-day) DoS/DDoS attacks in network traffic data.
+    \item Classify detected threats into specific attack categories with confidence scores.
+    \item Generate structured output reports suitable for security operations and incident response workflows.
+    \item Provide a configurable, extensible platform that can be adapted to different network environments and detection requirements.
+\end{itemize}
+
+The hybrid approach maximizes detection accuracy by leveraging XGBoost's high-precision classification for known attack patterns, while Kitsune's anomaly detection provides coverage for novel, previously unseen threats.
+
+
+\section{Supported Input Formats}
+
+The system supports three primary input formats:
+
+\begin{enumerate}
+    \item \textbf{CSV (Comma-Separated Values):}
+    \begin{itemize}
+        \item Flow-based network datasets with pre-extracted features.
+        \item Expected to contain the 33 selected features defined in \texttt{config.yaml}.
+        \item Label column (optional) --- used for evaluation when available.
+        \item Maximum file size: 4096~MB (configurable via \texttt{data\_loading.max\_file\_size\_mb}).
+        \item Row limit per file: 100,000 rows (configurable via \texttt{data\_loading.max\_rows\_per\_file}).
+    \end{itemize}
+
+    \item \textbf{PCAP (Packet Capture):}
+    \begin{itemize}
+        \item Raw packet capture files from network interfaces or monitoring tools.
+        \item Processed through the integrated Scapy-based feature extraction pipeline.
+        \item Supports bidirectional flow aggregation via 5-tuple identification (Source~IP, Destination~IP, Source~Port, Destination~Port, Protocol).
+        \item Extracted features are saved as CSV in the output directory for reproducibility.
+    \end{itemize}
+
+    \item \textbf{PCAPNG (Next Generation Packet Capture):}
+    \begin{itemize}
+        \item Extended packet capture format with enhanced metadata support.
+        \item Processed using the same pipeline as standard PCAP files.
+        \item Supports all features available in PCAP processing.
+    \end{itemize}
+\end{enumerate}
+
+\noindent\textbf{Dataset Size Considerations:}
+\begin{itemize}
+    \item \textbf{Small} (${\sim}100$~MB) --- processed entirely in memory.
+    \item \textbf{Medium} (100~MB -- 1~GB) --- processed with row-limiting.
+    \item \textbf{Large} (1~GB -- 4~GB) --- processed with chunk-based loading.
+    \item \textbf{Maximum supported:} 4~GB (configurable upper limit).
+\end{itemize}
+
+
+\section{Acceptance Criteria}
+
+The system must satisfy the following acceptance criteria to be considered production-ready:
+
+\begin{enumerate}
+    \item Successfully processes multi-gigabyte CSV datasets on local hardware without memory overflow errors.
+    \item Detects both known DoS/DDoS attack types (10 categories) and unknown anomalous traffic patterns.
+    \item Produces correct file-level classification verdicts (\textsc{Safe}, \textsc{Suspicious}, or \textsc{Malicious}) based on flow analysis.
+    \item Generates a structured Markdown summary report (\texttt{Report.md}) containing detection statistics, model information, flow breakdowns, and timestamped metadata.
+    \item Outputs JSON prediction files categorized into benign, DoS/DDoS, and anomaly classifications.
+    \item Provides confidence scores for all detection results, combining XGBoost class probability with Kitsune anomaly severity.
+    \item Executes via a single command interface --- either through \texttt{run.bat} (Windows launcher) or direct Python invocation (\texttt{python run.py}).
+\end{enumerate}
+
+
+\section{Success Metrics}
+
+The following quantitative and qualitative metrics define the system's success:
+
+\noindent\textbf{Quantitative Metrics:}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Metric} & \textbf{Target} \\
+\hline
+Detection Accuracy & $\geq 95\%$ on known DoS/DDoS attack types \\
+\hline
+False Positive Rate & $\leq 5\%$ on clean benign traffic \\
+\hline
+Zero-Day Detection & Kitsune anomaly scores reliably exceed threshold \\
+\hline
+Processing Speed & 100~MB CSV analyzed in under 60 seconds \\
+\hline
+\end{tabular}
+\caption{Quantitative success metrics.}
+\end{table}
+
+\noindent\textbf{Qualitative Metrics:}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{9cm}|}
+\hline
+\textbf{Metric} & \textbf{Description} \\
+\hline
+Reproducibility & Identical inputs produce consistent detection results across runs. \\
+\hline
+Interpretability & Each flow prediction includes a human-readable reason field explaining the detection logic. \\
+\hline
+Extensibility & New attack types or features can be added through configuration changes and model retraining without modifying core source code. \\
+\hline
+Scalability & System architecture supports future migration to real-time detection and REST API deployment. \\
+\hline
+\end{tabular}
+\caption{Qualitative success metrics.}
+\end{table}
+
+
+% ============================================================
+\chapter{System Architecture}
+% ============================================================
+
+\section{High-Level Architecture Diagram}
+
+The system follows a modular, layered architecture with clear separation of concerns across four primary layers: \textbf{Input}, \textbf{Processing}, \textbf{Detection}, and \textbf{Output}.
+
+\begin{verbatim}
++-------------------------------------------------------------+
+|                      INPUT LAYER                            |
+|   CSV Files    PCAP Files    PCAPNG Files                   |
+|       |            |              |                         |
+|       +------------+------------- +                         |
+|                    v                                        |
+|        InputHandler (src/input_handler.py)                  |
+|        File Validation & Routing                            |
++--------------------+----------------------------------------+
+                     |
+                     v
++-------------------------------------------------------------+
+|                   PROCESSING LAYER                          |
+|   CSV Path:               PCAP Path:                        |
+|   DataLoader              FeatureExtractor                  |
+|   (data_loader.py)        (feature_extractor.py)            |
+|       |                        |                            |
+|       +------------+-----------+                            |
+|                    v                                        |
+|       Feature-Aligned DataFrame (33 Features)               |
++--------------------+----------------------------------------+
+                     |
+                     v
++-------------------------------------------------------------+
+|                   DETECTION LAYER                           |
+|   XGBoost Classifier        Kitsune Autoencoder             |
+|   (xgboost_model.py)        (kitsune.py)                    |
+|   Output: Label, Prob       Output: RMSE, Flag              |
+|       |                          |                          |
+|       +------------+-------------+                          |
+|                    v                                        |
+|        Hybrid Decision Engine (hybrid.py)                   |
+|        Decision Fusion | Heuristic Overrides                |
+|        Confidence Scoring | Verdict Assignment              |
++--------------------+----------------------------------------+
+                     |
+                     v
++-------------------------------------------------------------+
+|                    OUTPUT LAYER                             |
+|   Report.md         Prediction JSONs      Debug Logs        |
+|   (Summary Report)  (benign/dos/anomaly)  (technical_       |
+|                                            debug.log)       |
++-------------------------------------------------------------+
+\end{verbatim}
+
+
+\section{Modular Design Philosophy}
+
+The system is built on a modular architecture with four guiding design principles:
+
+\begin{enumerate}
+    \item \textbf{Single Responsibility:} Each module handles one specific concern:
+    \begin{itemize}
+        \item \texttt{input\_handler.py} --- File validation and format routing.
+        \item \texttt{data\_loader.py} --- CSV loading and feature standardization.
+        \item \texttt{feature\_extractor.py} --- PCAP-to-feature conversion.
+        \item \texttt{xgboost\_model.py} --- Supervised classification.
+        \item \texttt{kitsune.py} --- Unsupervised anomaly detection.
+        \item \texttt{hybrid.py} --- Decision fusion and verdict generation.
+        \item \texttt{reporting.py} --- Output formatting and file generation.
+        \item \texttt{utils.py} --- Logging and hardware detection utilities.
+    \end{itemize}
+
+    \item \textbf{Loose Coupling:} Modules communicate through well-defined interfaces (DataFrames and dictionaries). No module directly imports another module's internal state.
+
+    \item \textbf{Configuration-Driven:} All tunable parameters (paths, hyperparameters, features, thresholds) are externalized to \texttt{config.yaml}. No hardcoded values exist in source code for configurable parameters.
+
+    \item \textbf{Centralized Orchestration:} \texttt{run.py} serves as the sole entry point and orchestrator. It manages the execution flow, model loading, and coordination between components.
+\end{enumerate}
+
+
+\section{File Hierarchy \& Project Structure}
+
+\begin{verbatim}
+Hibrid/
+|-- config.yaml                  Central configuration file
+|-- requirements.txt             Python dependencies (6 packages)
+|-- run.py                       Main entry point & orchestrator
+|-- run.bat                      Windows batch launcher
+|-- Dockerfile                   Docker containerization config
+|-- analyze_tier2.py             Post-analysis utility for Tier 2
+|-- debug_startup.py             System diagnostics tool
+|
+|-- src/                         Core processing modules
+|   |-- input_handler.py         File validation & routing
+|   |-- data_loader.py           CSV loading & preprocessing
+|   |-- feature_extractor.py     PCAP -> feature extraction
+|   |-- reporting.py             Report & output generation
+|   +-- utils.py                 Logging & device detection
+|
+|-- models/                      Machine learning models
+|   |-- xgboost_model.py         XGBoost classifier implementation
+|   |-- kitsune.py               Kitsune autoencoder implementation
+|   |-- hybrid.py                Hybrid Decision Engine
+|   |-- xgboost_model.json       Trained XGBoost model (generated)
+|   |-- kitsune_model.pkl        Trained Kitsune model (generated)
+|   +-- kitsune_model.pkl.sha256 Model integrity checksum
+|
+|-- Dataset/                     Training & testing data
+|   |-- PolishedBenign/          Clean benign traffic
+|   |   +-- Polished_benign.csv
+|   |-- PolishedDos/             10 attack type CSVs
+|   |   |-- Polished_Dos_DNS.csv
+|   |   |-- Polished_Dos_LDAP.csv
+|   |   |-- Polished_Dos_MSSQL.csv
+|   |   |-- Polished_Dos_NetBIOS.csv
+|   |   |-- Polished_Dos_NTP.csv
+|   |   |-- Polished_Dos_SNMP.csv
+|   |   |-- Polished_Dos_SSDP.csv
+|   |   |-- Polished_Dos_Syn.csv
+|   |   |-- Polished_Dos_TFTP.csv
+|   |   +-- Polished_Dos_UDP.csv
+|   |-- Tier1_PureAttack_Mix_*   Pure attack test datasets
+|   |-- Tier2_BenignHeavy_*      Benign-heavy test datasets
+|   +-- Tier3_Mixed_Ratio_*      Mixed ratio test datasets
+|
+|-- outputs/                     Generated results (per-run)
+|   +-- <filename>_<timestamp>/
+|       |-- logs/
+|       |   +-- technical_debug.log
+|       |-- predictions/
+|       |   |-- benign_flows.json
+|       |   |-- dos_ddos_flows.json
+|       |   +-- anomaly_flows.json
+|       +-- report/
+|           +-- Report.md
+|
+|-- tests/                       Test suite
+|   +-- test_feature_extractor.py
+|
++-- Documents/                   Project documentation
+    |-- LLA_Documentation_Booklet.txt
+    |-- LLA_Documentation_Booklet.thx
+    +-- [other documentation files]
+\end{verbatim}
+
+
+\section{Component Interaction Flow}
+
+The components interact in the following sequence during a detection run:
+
+\begin{enumerate}
+    \item \textbf{Entry Point} (\texttt{run.py}):
+    \begin{itemize}
+        \item Parses command-line arguments or presents interactive menu.
+        \item Loads \texttt{config.yaml} into a global \texttt{CONFIG} dictionary.
+        \item Creates a timestamped output directory structure.
+    \end{itemize}
+
+    \item \textbf{Input Handling} (\texttt{src/input\_handler.py}):
+    \begin{itemize}
+        \item Validates the input file exists and is a supported format.
+        \item Routes CSV files to \texttt{data\_loader.py}.
+        \item Routes PCAP/PCAPNG files to \texttt{feature\_extractor.py}.
+    \end{itemize}
+
+    \item \textbf{Data Processing:}
+    \begin{itemize}
+        \item \textit{CSV Path} (\texttt{data\_loader.py}): Reads CSV with pandas, normalizes column names to lowercase, selects the 33 configured features, fills missing values with 0.0.
+        \item \textit{PCAP Path} (\texttt{feature\_extractor.py}): Reads packets using Scapy's \texttt{rdpcap()}, groups packets into bidirectional flows using 5-tuples, computes 33 statistical features per flow, returns a DataFrame with the same schema as CSV processing.
+    \end{itemize}
+
+    \item \textbf{Model Inference:}
+    \begin{itemize}
+        \item \textit{XGBoost:} Produces class label (0\,=\,Benign, 1\,=\,DoS) and probability per flow.
+        \item \textit{Kitsune:} Computes RMSE reconstruction error per flow, compares against dynamic threshold ($\mu + k\sigma$).
+    \end{itemize}
+
+    \item \textbf{Decision Fusion} (\texttt{models/hybrid.py}):
+    \begin{itemize}
+        \item Receives both model outputs.
+        \item Applies hierarchical decision logic.
+        \item Applies heuristic safety overrides (broadcast, multicast detection).
+        \item Computes combined confidence score.
+        \item Assigns final verdict and human-readable reason.
+    \end{itemize}
+
+    \item \textbf{Output Generation} (\texttt{src/reporting.py}):
+    \begin{itemize}
+        \item Saves categorized JSON prediction files.
+        \item Generates Markdown summary report (\texttt{Report.md}).
+        \item Writes technical debug log.
+    \end{itemize}
+\end{enumerate}
+
+
+\section{Data Flow Pipeline (End-to-End)}
+
+\begin{verbatim}
+Input File
+    |
+    v
+[File Validation] --- Invalid --> Error & Abort
+    |
+    | Valid
+    v
+[Format Detection]
+    |
+    |-- CSV --> [DataLoader] --> [Feature Selection] --> DataFrame
+    |
+    +-- PCAP/PCAPNG --> [FeatureExtractor] --> [Flow Aggregation]
+                                                    |
+                                                    v
+                                            [Feature Computation]
+                                                    |
+                                                    v
+              Both paths produce identical DataFrames
+              (33 features per flow)
+                            |
+                            v
+                  +-----------------------+
+                  |  Parallel Inference   |
+                  |  XGBoost --> Labels   |
+                  |  Kitsune --> RMSE     |
+                  +-----------+-----------+
+                              |
+                              v
+                  +-----------------------+
+                  |  Hybrid Engine        |
+                  |  Decision Fusion      |
+                  |  Heuristic Checks     |
+                  |  Confidence Scoring   |
+                  +-----------+-----------+
+                              |
+                              v
+                  +-----------------------+
+                  |  Output Generation    |
+                  |  Report.md            |
+                  |  Prediction JSONs     |
+                  |  Debug Logs           |
+                  +-----------------------+
+\end{verbatim}
+
+
+% ============================================================
+\chapter{Configuration Management}
+% ============================================================
+
+\section{config.yaml --- Central Configuration}
+
+All system parameters are managed through a single YAML configuration file located at the project root: \texttt{config.yaml}.
+
+The configuration is loaded at startup by \texttt{run.py} and passed as a dictionary to all components. This centralized approach ensures:
+\begin{itemize}
+    \item No hardcoded values in source code.
+    \item Easy parameter tuning without code changes.
+    \item Reproducible experiments through configuration versioning.
+    \item Clear documentation of all system settings.
+\end{itemize}
+
+The configuration file is organized into six logical sections, described in the following subsections.
+
+
+\section{Directory Structure Configuration}
+
+\begin{verbatim}
+directories:
+  models: "models/"           # Trained model storage
+  training: "training/"       # Training data cache
+  detection: "detection/"     # Detection workspace
+  datasets: "datasets/"       # Dataset root
+  outputs: "outputs/"         # Results output root
+  logs: "outputs/logs/"       # Log file storage
+\end{verbatim}
+
+These paths are relative to the project root directory. The system creates subdirectories as needed during execution (e.g., timestamped output folders for each detection run).
+
+
+\section{Dataset Configuration}
+
+\begin{verbatim}
+datasets:
+  benign: "Dataset/PolishedBenign/Polished_benign.csv"
+  dos: "Dataset/PolishedDos/"
+
+data_loading:
+  max_rows_per_file: 100000
+  max_file_size_mb: 4096
+\end{verbatim}
+
+\begin{itemize}
+    \item \textbf{benign:} Points to the clean traffic dataset used for Kitsune training. Contains exclusively benign network flows with the 33 selected features plus a label column.
+    \item \textbf{dos:} Points to the directory containing 10 DoS attack type CSVs used for XGBoost training. Each file contains flows of a specific attack type.
+    \item \textbf{max\_rows\_per\_file} (100,000): Limits the number of rows loaded from any single CSV file to prevent out-of-memory errors on systems with limited RAM.
+    \item \textbf{max\_file\_size\_mb} (4,096): Rejects files exceeding this size limit. Acts as a safety valve to prevent accidental processing of extremely large files (4~GB limit).
+\end{itemize}
+
+
+\section{Model Hyperparameters}
+
+\subsection*{XGBoost Configuration}
+
+\begin{verbatim}
+xgboost:
+  max_depth: 6
+  learning_rate: 0.1
+  n_estimators: 100
+  objective: "binary:logistic"
+  tree_method: "auto"
+\end{verbatim}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|p{7.5cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+\hline
+\texttt{max\_depth} & 6 & Controls model complexity. Balances performance and generalization for network flow classification. \\
+\hline
+\texttt{learning\_rate} & 0.1 & Step size shrinkage (eta). Lower values require more estimators but produce better generalization. \\
+\hline
+\texttt{n\_estimators} & 100 & Number of gradient-boosted trees. Combined with \texttt{learning\_rate}=0.1, balances accuracy and training speed. \\
+\hline
+\texttt{objective} & \texttt{binary:logistic} & Binary classification with logistic regression output. Produces probability scores between 0 and 1. \\
+\hline
+\texttt{tree\_method} & \texttt{auto} & Auto-selects best tree construction algorithm. Switches to \texttt{gpu\_hist} when a CUDA-enabled GPU is detected. \\
+\hline
+\end{tabular}
+\caption{XGBoost hyperparameters.}
+\end{table}
+
+\subsection*{Kitsune Configuration}
+
+\begin{verbatim}
+kitsune:
+  max_autoencoder_size: 10
+  learning_rate: 0.001
+  hidden_ratio: 0.75
+  feature_map_min: 1
+  feature_map_max: 10
+  threshold_std_factor: 3.0
+\end{verbatim}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|p{7.5cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Description} \\
+\hline
+\texttt{max\_autoencoder\_size} & 10 & Maximum number of input neurons per individual autoencoder in the ensemble. \\
+\hline
+\texttt{learning\_rate} & 0.001 & Learning rate for autoencoder weight updates during training. \\
+\hline
+\texttt{hidden\_ratio} & 0.75 & Ratio of hidden layer size to input size. Creates a 75\% compression bottleneck for reconstruction learning. \\
+\hline
+\texttt{feature\_map\_min} & 1 & Minimum features assigned per sub-autoencoder. \\
+\hline
+\texttt{feature\_map\_max} & 10 & Maximum features assigned per sub-autoencoder in the ensemble. \\
+\hline
+\texttt{threshold\_std\_factor} & 3.0 & Standard deviations above mean RMSE for the anomaly threshold. Formula: $\text{threshold} = \mu_{\text{RMSE}} + 3.0 \times \sigma_{\text{RMSE}}$. \\
+\hline
+\end{tabular}
+\caption{Kitsune hyperparameters.}
+\end{table}
+
+
+\section{Feature Selection (33 Features)}
+
+The system uses a curated set of 33 network flow features, selected as the intersection of features available in both benign and DoS datasets. These features are organized into five categories:
+
+\noindent\textbf{Category 1 --- Flow Duration (1 feature):}
+\begin{enumerate}
+    \item \texttt{flow duration}
+\end{enumerate}
+
+\noindent\textbf{Category 2 --- Packet Volume \& Length (12 features):}
+\begin{enumerate}
+\setcounter{enumi}{1}
+    \item \texttt{total fwd packets}
+    \item \texttt{total backward packets}
+    \item \texttt{total length of fwd packets}
+    \item \texttt{total length of bwd packets}
+    \item \texttt{fwd packet length max}
+    \item \texttt{fwd packet length min}
+    \item \texttt{fwd packet length mean}
+    \item \texttt{fwd packet length std}
+    \item \texttt{bwd packet length max}
+    \item \texttt{bwd packet length min}
+    \item \texttt{bwd packet length mean}
+    \item \texttt{bwd packet length std}
+\end{enumerate}
+
+\noindent\textbf{Category 3 --- Flow Rate Metrics (2 features):}
+\begin{enumerate}
+\setcounter{enumi}{13}
+    \item \texttt{flow bytes/s}
+    \item \texttt{flow packets/s}
+\end{enumerate}
+
+\noindent\textbf{Category 4 --- Inter-Arrival Time Statistics (10 features):}
+\begin{enumerate}
+\setcounter{enumi}{15}
+    \item \texttt{flow iat mean}
+    \item \texttt{flow iat std}
+    \item \texttt{flow iat max}
+    \item \texttt{flow iat min}
+    \item \texttt{fwd iat total}
+    \item \texttt{fwd iat mean}
+    \item \texttt{fwd iat std}
+    \item \texttt{fwd iat max}
+    \item \texttt{fwd iat min}
+    \item \texttt{bwd iat total}
+    \item \texttt{bwd iat mean}
+    \item \texttt{bwd iat std}
+    \item \texttt{bwd iat max}
+    \item \texttt{bwd iat min}
+\end{enumerate}
+
+\noindent\textbf{Category 5 --- TCP Flag Counters (4 features):}
+\begin{enumerate}
+\setcounter{enumi}{29}
+    \item \texttt{fwd psh flags}
+    \item \texttt{bwd psh flags}
+    \item \texttt{fwd urg flags}
+    \item \texttt{bwd urg flags}
+\end{enumerate}
+
+\noindent\textbf{Feature Selection Rationale:}
+\begin{itemize}
+    \item[\textbf{(a)}] Exist in both the benign (\texttt{PolishedBenign}) and attack (\texttt{PolishedDos}) datasets --- ensuring consistent availability during both training and detection.
+    \item[\textbf{(b)}] Can be extracted from raw PCAP files via the \texttt{FeatureExtractor} --- ensuring format-agnostic detection.
+    \item[\textbf{(c)}] Capture the key behavioral characteristics that distinguish normal traffic from DoS/DDoS attacks: abnormal packet sizes, unusual timing patterns, extreme flow rates, and atypical flag usage.
+\end{itemize}
+
+
+\section{Detection Thresholds}
+
+\begin{verbatim}
+thresholds:
+  malicious_file_ratio: 0.30
+\end{verbatim}
+
+\noindent\textbf{malicious\_file\_ratio} (0.30): The proportion of flows that must be classified as malicious or anomalous for a file to receive a \textsc{Malicious} or \textsc{Suspicious} verdict.
+
+\begin{itemize}
+    \item If $\geq 30\%$ of flows in a file are flagged as DoS/DDoS or anomalous, the file is classified as \textsc{Malicious}.
+    \item If the ratio is below 30\% but anomalies are present, the file may be classified as \textsc{Suspicious}.
+    \item If no significant anomalies or malicious flows are detected, the file is classified as \textsc{Safe}.
+\end{itemize}
+
+\noindent Additionally, the Kitsune anomaly threshold is derived dynamically:
+\begin{equation}
+    \text{threshold} = \mu_{\text{RMSE}} + k \cdot \sigma_{\text{RMSE}}
+\end{equation}
+where $k = \texttt{threshold\_std\_factor} = 3.0$, corresponding to approximately 99.7\% of the normal distribution for benign traffic. Flows with RMSE above this threshold are flagged as anomalous.
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%            PART III — DATA PROCESSING PIPELINE
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Data Processing Pipeline}
+
+% ============================================================
+\chapter{Input Handling}
+% ============================================================
+
+\section{Supported File Formats (CSV, PCAP, PCAPNG)}
+
+The system accepts three network traffic file formats:
+
+\begin{enumerate}
+    \item \textbf{CSV (Comma-Separated Values):}
+    \begin{itemize}
+        \item Flow-based datasets exported from network analysis tools (CICFlowMeter, Wireshark statistics, custom exporters).
+        \item Expected to contain pre-computed flow-level features.
+        \item The most efficient format --- no packet-level processing required.
+        \item Recognized by extension: \texttt{.csv}
+    \end{itemize}
+
+    \item \textbf{PCAP (Packet Capture):}
+    \begin{itemize}
+        \item Raw packet-level captures from network interfaces, tcpdump, or Wireshark.
+        \item Requires full feature extraction pipeline (Scapy-based processing).
+        \item Recognized by extension: \texttt{.pcap}
+    \end{itemize}
+
+    \item \textbf{PCAPNG (Next Generation Packet Capture):}
+    \begin{itemize}
+        \item Modern packet capture format with additional metadata (interface information, comments, name resolution).
+        \item Processed identically to standard PCAP files.
+        \item Recognized by extension: \texttt{.pcapng}
+    \end{itemize}
+\end{enumerate}
+
+Both PCAP and PCAPNG files are processed through the same feature extraction pipeline (\texttt{FeatureExtractor}), which converts raw packets into flow-level statistical features matching the CSV schema.
+
+
+\section{File Validation \& Routing Logic}
+
+Input handling is managed by the \texttt{InputHandler} class (\texttt{src/input\_handler.py}), which performs two primary functions: validation and routing.
+
+\subsection*{Validation (\texttt{validate\_file} method)}
+
+\begin{enumerate}
+    \item \textbf{Step 1:} Verify the file exists on disk using \texttt{os.path.exists()}. If the file is not found, log an error and return \texttt{False}.
+    \item \textbf{Step 2:} Extract the file extension using \texttt{os.path.splitext()}. Convert the extension to lowercase for case-insensitive comparison.
+    \item \textbf{Step 3:} Check the extension against the supported list: \texttt{['.csv', '.pcap', '.pcapng']}. If the extension is not supported, log an error and return \texttt{False}.
+    \item \textbf{Step 4:} Return \texttt{True} if both checks pass.
+\end{enumerate}
+
+\subsection*{Routing (\texttt{process\_file} method)}
+
+After validation, the file is routed to the appropriate processor:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Extension} & \textbf{Processor} \\
+\hline
+\texttt{.csv} & \texttt{load\_csv()} from \texttt{data\_loader.py} \\
+\hline
+\texttt{.pcap}, \texttt{.pcapng} & \texttt{FeatureExtractor.extract\_features()} from \texttt{feature\_extractor.py} \\
+\hline
+\end{tabular}
+\caption{File extension to processor routing.}
+\end{table}
+
+\noindent For \textbf{PCAP/PCAPNG files:}
+\begin{itemize}
+    \item The \texttt{FeatureExtractor} is instantiated with the system configuration.
+    \item Features are extracted and returned as a pandas DataFrame.
+    \item If extraction produces an empty DataFrame or \texttt{None}, an error is logged and \texttt{None} is returned.
+\end{itemize}
+
+\noindent For \textbf{CSV files:}
+\begin{itemize}
+    \item The file is loaded directly via \texttt{load\_csv()} with the configured features.
+    \item The DataFrame is returned for downstream processing.
+\end{itemize}
+
+Both paths produce a pandas DataFrame with the same 33-feature schema, ensuring uniform input to the detection layer.
+
+
+\section{Error Handling Strategy}
+
+The input handling module employs a fail-fast strategy with detailed logging:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|p{6cm}|}
+\hline
+\textbf{Error Condition} & \textbf{Log Level} & \textbf{Result} \\
+\hline
+File Not Found & ERROR & Returns \texttt{None} --- pipeline halts gracefully. \\
+\hline
+Unsupported Format & ERROR & Returns \texttt{None} --- prevents processing of incompatible files. \\
+\hline
+PCAP Extraction Failure & ERROR & Returns \texttt{None} --- typically caused by corrupted captures or files with no IP packets. \\
+\hline
+CSV Loading Failure & ERROR & Returns \texttt{None} --- exception details propagated from \texttt{data\_loader.py}. \\
+\hline
+\end{tabular}
+\caption{Input handling error conditions.}
+\end{table}
+
+All errors are logged through the centralized logger (\texttt{src/utils.py}), which writes to both the console and the technical debug log file. The pipeline is designed to never throw unhandled exceptions --- all errors are caught, logged, and result in a \texttt{None} return that the orchestrator (\texttt{run.py}) handles.
+
+
+% ============================================================
+\chapter{Feature Extraction}
+% ============================================================
+
+\section{PCAP Processing Pipeline (Scapy)}
+
+When a PCAP or PCAPNG file is provided, the system invokes the \texttt{FeatureExtractor} class (\texttt{src/feature\_extractor.py}) to convert raw packets into flow-level statistical features. The pipeline operates in three phases:
+
+\subsection*{Phase 1 --- Packet Reading}
+
+\begin{itemize}
+    \item Uses Scapy's \texttt{PcapReader} for memory-efficient streaming (reads packets one at a time instead of loading the entire file).
+    \item Filters for IP-layer packets only (packets without an IP layer are silently skipped).
+    \item Extracts per-packet metadata: source/destination IP, source/destination port, protocol number, and timestamp.
+    \item Progress is logged every 10,000 packets.
+\end{itemize}
+
+\subsection*{Phase 2 --- Flow Aggregation}
+
+\begin{itemize}
+    \item Packets are grouped into bidirectional flows using canonical 5-tuple keys (see Section~8.3).
+    \item A \texttt{defaultdict} stores each flow's packets and direction labels.
+    \item The first packet of each flow determines the ``forward'' direction.
+    \item Subsequent packets are classified as forward (\texttt{direction=1}) or backward (\texttt{direction=-1}) based on the initiator identity.
+\end{itemize}
+
+\subsection*{Phase 3 --- Feature Computation}
+
+\begin{itemize}
+    \item For each aggregated flow, the \texttt{\_calculate\_flow\_stats()} method computes 33 statistical features across 5 categories (see Section~8.4).
+    \item Results are compiled into a pandas DataFrame.
+    \item Missing features are filled with 0.0.
+    \item The final DataFrame includes both flow identifiers (\texttt{src\_ip}, \texttt{dst\_ip}, \texttt{src\_port}, \texttt{dst\_port}, \texttt{protocol}) and the 33 selected features.
+\end{itemize}
+
+
+\section{Bidirectional Flow Analysis}
+
+The system treats network conversations as bidirectional flows. This means that packets from Host~A to Host~B and packets from Host~B back to Host~A are aggregated into a single flow record.
+
+\noindent\textbf{Why Bidirectional?}
+\begin{itemize}
+    \item DDoS attacks exhibit asymmetric traffic patterns (many requests, few responses). Bidirectional analysis captures this asymmetry through separate forward and backward statistics.
+    \item Reduces the number of flows by approximately 50\%, improving efficiency.
+    \item Produces richer features --- the ratio between forward and backward metrics is a powerful indicator of attack behavior.
+\end{itemize}
+
+\noindent\textbf{Direction Determination:}
+
+The first packet observed for a given 5-tuple sets the forward direction. All subsequent packets are classified by comparing their source IP and source port against the initiator:
+
+\begin{itemize}
+    \item \textbf{Match initiator} $\rightarrow$ Forward (\texttt{direction = 1})
+    \item \textbf{No match} $\rightarrow$ Backward (\texttt{direction = -1})
+\end{itemize}
+
+This approach correctly handles:
+\begin{itemize}
+    \item Standard TCP request/response conversations.
+    \item UDP-based floods (predominantly one-directional).
+    \item Mixed protocols sharing the same endpoint pairs.
+\end{itemize}
+
+Packets in each direction are separated into \texttt{fwd\_pkts} and \texttt{bwd\_pkts} lists, which are used independently for computing directional statistics.
+
+
+\section{5-Tuple Flow Identification}
+
+Each network flow is uniquely identified by a 5-tuple:
+
+\begin{center}
+\texttt{(Source IP, Destination IP, Source Port, Destination Port, Protocol)}
+\end{center}
+
+To ensure bidirectional aggregation, the system creates canonical keys by sorting the IP addresses:
+
+\begin{verbatim}
+if src_ip < dst_ip:
+    key = (src_ip, dst_ip, src_port, dst_port, protocol)
+else:
+    key = (dst_ip, src_ip, dst_port, src_port, protocol)
+\end{verbatim}
+
+This guarantees that packets flowing $A \rightarrow B$ and $B \rightarrow A$ produce the same key, enabling them to be aggregated into a single bidirectional flow.
+
+\noindent\textbf{Port Extraction:}
+\begin{itemize}
+    \item \textbf{TCP packets:} \texttt{sport} and \texttt{dport} extracted from the TCP header.
+    \item \textbf{UDP packets:} \texttt{sport} and \texttt{dport} extracted from the UDP header.
+    \item \textbf{Other protocols} (ICMP, etc.): \texttt{sport} and \texttt{dport} default to 0.
+\end{itemize}
+
+\noindent\textbf{Protocol Number:}
+\begin{itemize}
+    \item Extracted from the IP header's \texttt{proto} field.
+    \item Common values: 6 (TCP), 17 (UDP), 1 (ICMP).
+\end{itemize}
+
+
+\section{Feature Categories}
+
+The 33 features are organized into 5 categories, each capturing a different behavioral aspect of network traffic.
+
+\subsection{Packet Counts (Volume)}
+
+These features measure the volume of traffic in each direction:
+
+\begin{itemize}
+    \item \texttt{total fwd packets} --- Count of packets in the forward direction.
+    \item \texttt{total backward packets} --- Count of packets in the backward direction.
+\end{itemize}
+
+Computed by counting packets where \texttt{direction == 1} (forward) or \texttt{direction == -1} (backward).
+
+\noindent\textbf{Attack Signature:} DDoS attacks typically show massive forward packet counts with disproportionately few backward packets (reflection attacks) or extremely high counts in both directions (volumetric floods).
+
+
+\subsection{Packet Lengths (Size Dynamics)}
+
+Statistical measures of packet sizes in bytes, computed separately for forward and backward directions:
+
+\noindent\textbf{Forward:}
+\begin{itemize}
+    \item \texttt{fwd packet length max}, \texttt{min}, \texttt{mean}, \texttt{std}
+    \item \texttt{total length of fwd packets}
+\end{itemize}
+
+\noindent\textbf{Backward:}
+\begin{itemize}
+    \item \texttt{bwd packet length max}, \texttt{min}, \texttt{mean}, \texttt{std}
+    \item \texttt{total length of bwd packets}
+\end{itemize}
+
+Computed using the \texttt{\_set\_stat\_block()} helper method, which calculates \texttt{numpy} max, min, mean, and std over the byte-length of each packet. For empty packet sets (e.g., no backward packets in a unidirectional flow), all values default to 0 via \texttt{\_set\_zero\_stat\_block()}.
+
+\noindent\textbf{Attack Signature:} Attack traffic often has uniform packet sizes (same payload repeated), resulting in very low standard deviation. Legitimate traffic tends to have variable packet sizes.
+
+
+\subsection{Inter-Arrival Times --- IAT (Timing)}
+
+Inter-arrival time is the time gap between consecutive packets, measured in microseconds. Computed at three levels:
+
+\noindent\textbf{Flow-level (overall):}
+\begin{itemize}
+    \item \texttt{flow iat mean}, \texttt{std}, \texttt{max}, \texttt{min}
+    \item Calculated from sorted timestamps of all packets in both directions.
+\end{itemize}
+
+\noindent\textbf{Forward-only:}
+\begin{itemize}
+    \item \texttt{fwd iat total}, \texttt{mean}, \texttt{std}, \texttt{max}, \texttt{min}
+    \item Calculated from sorted timestamps of forward packets only.
+\end{itemize}
+
+\noindent\textbf{Backward-only:}
+\begin{itemize}
+    \item \texttt{bwd iat total}, \texttt{mean}, \texttt{std}, \texttt{max}, \texttt{min}
+    \item Calculated from sorted timestamps of backward packets only.
+\end{itemize}
+
+IAT computation uses NumPy's \texttt{diff()} function on sorted timestamp arrays, multiplied by $10^{6}$ to convert from seconds to microseconds. For flows with 0 or 1 packet in a direction, all IAT values default to 0.
+
+\noindent\textbf{Attack Signature:} DDoS flooding attacks produce extremely small and consistent inter-arrival times (high packet rate). Normal traffic has variable and generally larger IATs.
+
+
+\subsection{TCP Flags (Behavior)}
+
+Flag counters track the presence of specific TCP control flags in each direction:
+
+\begin{itemize}
+    \item \texttt{fwd psh flags} --- Count of PSH (Push) flags in forward packets.
+    \item \texttt{bwd psh flags} --- Count of PSH flags in backward packets.
+    \item \texttt{fwd urg flags} --- Count of URG (Urgent) flags in forward packets.
+    \item \texttt{bwd urg flags} --- Count of URG flags in backward packets.
+\end{itemize}
+
+Computed by iterating over all TCP packets and checking the flags field using Scapy's packet representation. Flags are converted to string form and checked for \texttt{'P'} (PSH) and \texttt{'U'} (URG) characters. Non-TCP packets (UDP, ICMP) do not contribute to flag counters.
+
+\noindent\textbf{Attack Signature:} SYN flood attacks show unusual flag patterns. DoS tools often set specific flag combinations. URG flags are rare in legitimate traffic and may indicate protocol abuse.
+
+
+\subsection{Rate Calculations}
+
+Rate features measure the throughput and packet rate of the flow:
+
+\begin{itemize}
+    \item \texttt{flow bytes/s} --- Total bytes (forward $+$ backward) divided by flow duration in seconds.
+    \item \texttt{flow packets/s} --- Total packets divided by flow duration in seconds.
+\end{itemize}
+
+If the flow duration is 0 seconds (single-packet flow), both rates default to 0 to avoid division-by-zero errors.
+
+\noindent\textbf{Attack Signature:} DDoS attacks produce abnormally high byte and packet rates compared to normal traffic baselines.
+
+
+\section{Complete Feature List (33 Features --- Detailed)}
+
+The following table provides the complete feature list with category and computation details:
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{|c|l|l|l|}
+\hline
+\textbf{No.} & \textbf{Feature Name} & \textbf{Category} & \textbf{Computation} \\
+\hline
+1 & \texttt{flow duration} & Duration & $(\max_t - \min_t) \times 10^{6}$ $\mu$s \\
+\hline
+2 & \texttt{total fwd packets} & Volume & \texttt{len(fwd\_pkts)} \\
+\hline
+3 & \texttt{total backward packets} & Volume & \texttt{len(bwd\_pkts)} \\
+\hline
+4 & \texttt{total length of fwd packets} & Volume & \texttt{sum(fwd\_lens)} \\
+\hline
+5 & \texttt{total length of bwd packets} & Volume & \texttt{sum(bwd\_lens)} \\
+\hline
+6 & \texttt{fwd packet length max} & Size & \texttt{np.max(fwd\_lens)} \\
+\hline
+7 & \texttt{fwd packet length min} & Size & \texttt{np.min(fwd\_lens)} \\
+\hline
+8 & \texttt{fwd packet length mean} & Size & \texttt{np.mean(fwd\_lens)} \\
+\hline
+9 & \texttt{fwd packet length std} & Size & \texttt{np.std(fwd\_lens)} \\
+\hline
+10 & \texttt{bwd packet length max} & Size & \texttt{np.max(bwd\_lens)} \\
+\hline
+11 & \texttt{bwd packet length min} & Size & \texttt{np.min(bwd\_lens)} \\
+\hline
+12 & \texttt{bwd packet length mean} & Size & \texttt{np.mean(bwd\_lens)} \\
+\hline
+13 & \texttt{bwd packet length std} & Size & \texttt{np.std(bwd\_lens)} \\
+\hline
+14 & \texttt{flow bytes/s} & Rate & total\_bytes / duration\_s \\
+\hline
+15 & \texttt{flow packets/s} & Rate & total\_pkts / duration\_s \\
+\hline
+16 & \texttt{flow iat mean} & Timing & \texttt{np.mean(iat\_all)} \\
+\hline
+17 & \texttt{flow iat std} & Timing & \texttt{np.std(iat\_all)} \\
+\hline
+18 & \texttt{flow iat max} & Timing & \texttt{np.max(iat\_all)} \\
+\hline
+19 & \texttt{flow iat min} & Timing & \texttt{np.min(iat\_all)} \\
+\hline
+20 & \texttt{fwd iat total} & Timing & \texttt{sum(iat\_fwd)} \\
+\hline
+21 & \texttt{fwd iat mean} & Timing & \texttt{np.mean(iat\_fwd)} \\
+\hline
+22 & \texttt{fwd iat std} & Timing & \texttt{np.std(iat\_fwd)} \\
+\hline
+23 & \texttt{fwd iat max} & Timing & \texttt{np.max(iat\_fwd)} \\
+\hline
+24 & \texttt{fwd iat min} & Timing & \texttt{np.min(iat\_fwd)} \\
+\hline
+25 & \texttt{bwd iat total} & Timing & \texttt{sum(iat\_bwd)} \\
+\hline
+26 & \texttt{bwd iat mean} & Timing & \texttt{np.mean(iat\_bwd)} \\
+\hline
+27 & \texttt{bwd iat std} & Timing & \texttt{np.std(iat\_bwd)} \\
+\hline
+28 & \texttt{bwd iat max} & Timing & \texttt{np.max(iat\_bwd)} \\
+\hline
+29 & \texttt{bwd iat min} & Timing & \texttt{np.min(iat\_bwd)} \\
+\hline
+30 & \texttt{fwd psh flags} & Behavior & count(\texttt{'P'} in flags, fwd) \\
+\hline
+31 & \texttt{bwd psh flags} & Behavior & count(\texttt{'P'} in flags, bwd) \\
+\hline
+32 & \texttt{fwd urg flags} & Behavior & count(\texttt{'U'} in flags, fwd) \\
+\hline
+33 & \texttt{bwd urg flags} & Behavior & count(\texttt{'U'} in flags, bwd) \\
+\hline
+\end{tabular}
+\caption{Complete 33-feature list with computation details.}
+\end{table}
+
+
+\section{Feature Standardization \& Output Format}
+
+After feature computation, the \texttt{FeatureExtractor} standardizes the output:
+
+\begin{enumerate}
+    \item \textbf{Missing Feature Filling:} Any feature from the \texttt{selected\_features} list (\texttt{config.yaml}) that was not computed is added to the DataFrame with a default value of 0.0. This handles edge cases like PCAP files with only UDP traffic (no TCP flags).
+
+    \item \textbf{Column Selection:} The returned DataFrame contains:
+    \begin{itemize}
+        \item 5 identifier columns: \texttt{src\_ip}, \texttt{dst\_ip}, \texttt{src\_port}, \texttt{dst\_port}, \texttt{protocol}
+        \item 33 feature columns (matching \texttt{config.yaml}'s \texttt{selected\_features})
+    \end{itemize}
+    Only columns that exist in the DataFrame are returned (filtered via list intersection).
+
+    \item \textbf{Schema Consistency:} The output DataFrame's feature columns are identical in name and order to those produced by the CSV loading path (\texttt{data\_loader.py}), ensuring that the detection layer receives uniform input regardless of the original file format.
+\end{enumerate}
+
+
+\section{Proposed Features for Fine-Tuning}
+
+To improve the model's accuracy against State-Exhaustion and Slow-Rate attacks, the following features have been identified as optional additions for future fine-tuning. These features are not part of the current 33-feature set but can be integrated after primary approvals and model revalidation.
+
+\subsection{Critical TCP Flags (SYN, ACK, RST, FIN)}
+
+\noindent\textbf{Proposed Features:}
+\begin{itemize}
+    \item \texttt{SYN Flag Cnt}
+    \item \texttt{ACK Flag Cnt}
+    \item \texttt{RST Flag Cnt}
+    \item \texttt{FIN Flag Cnt}
+\end{itemize}
+
+\noindent\textbf{Reason for Addition:}
+\begin{itemize}
+    \item \textbf{SYN Floods:} Explicit SYN counting enables detection of SYN-heavy, ACK-light traffic patterns typical of half-open connection attacks.
+    \item \textbf{ACK Floods:} High ACK counts without corresponding data may indicate reflection or state-table exhaustion attacks.
+    \item \textbf{Scanning Activity:} Elevated RST or FIN counts strongly indicate port scanning or reconnaissance phases preceding DDoS attacks.
+\end{itemize}
+
+The current system tracks only PSH and URG flags. Adding SYN, ACK, RST, and FIN counters would provide coverage for connection-state manipulation attacks that exploit the TCP three-way handshake.
+
+
+\subsection{TCP Window Size}
+
+\noindent\textbf{Proposed Features:}
+\begin{itemize}
+    \item \texttt{Init Fwd Win Byts} (Initial forward window size in bytes)
+    \item \texttt{Init Bwd Win Byts} (Initial backward window size in bytes)
+\end{itemize}
+
+\noindent\textbf{Reason for Addition:}
+\begin{itemize}
+    \item \textbf{Bot Fingerprinting:} TCP window size is determined by the operating system's TCP stack. Legitimate systems exhibit standardized patterns based on their OS version and configuration.
+    \item \textbf{Detection Logic:} IoT botnets (e.g., Mirai) or scripted attack tools (e.g., hping3) often use hardcoded or non-standard window sizes, enabling differentiation between bots and legitimate clients.
+\end{itemize}
+
+These features would enhance the system's ability to distinguish machine-generated attack traffic from legitimate user traffic based on TCP stack fingerprinting.
+
+
+\subsection{Active / Idle Times}
+
+\noindent\textbf{Proposed Features:}
+\begin{itemize}
+    \item \texttt{Idle Mean} (Mean idle time between active periods)
+    \item \texttt{Idle Std} (Standard deviation of idle times)
+\end{itemize}
+
+\noindent\textbf{Reason for Addition:}
+\begin{itemize}
+    \item \textbf{Slow-Rate Attacks (Slowloris):} These attacks maintain open connections by periodically sending partial HTTP requests, keeping the connection alive while consuming server resources.
+    \item \textbf{Detection Logic:} While Flow Duration measures total session time, Idle Mean specifically exposes the intentional waiting behavior typical of slow-rate attacks. A high idle mean combined with a long flow duration is a strong indicator of Slowloris or similar slow-rate DoS strategies.
+\end{itemize}
+
+These features would extend detection coverage to application-layer slow-rate attacks, which are currently harder to detect using only packet volume and timing features.
+
+
+% ============================================================
+\chapter{Data Loading \& Preprocessing}
+% ============================================================
+
+\section{CSV Data Loading (\texttt{data\_loader.py})}
+
+The \texttt{data\_loader} module provides two primary functions:
+
+\subsection*{\texttt{load\_csv()}}
+
+Loads a single CSV file and returns a cleaned DataFrame with selected features. This is the primary function called during detection mode.
+
+\noindent\textbf{Function Signature:}
+\begin{verbatim}
+load_csv(filepath, selected_features=None, label_override=None)
+\end{verbatim}
+
+\noindent\textbf{Parameters:}
+\begin{itemize}
+    \item \texttt{filepath} --- Absolute or relative path to the CSV file.
+    \item \texttt{selected\_features} --- Optional list of feature column names. If \texttt{None}, uses the \texttt{selected\_features} from \texttt{config.yaml}.
+    \item \texttt{label\_override} --- Optional string to override all labels in the dataset (used during training to force benign/DoS labels).
+\end{itemize}
+
+\subsection*{\texttt{combine\_datasets()}}
+
+Loads and merges multiple datasets for training. Combines benign and DoS CSVs into a single training DataFrame.
+
+\noindent\textbf{Function Signature:}
+\begin{verbatim}
+combine_datasets(benign_path, dos_dir)
+\end{verbatim}
+
+\noindent\textbf{Parameters:}
+\begin{itemize}
+    \item \texttt{benign\_path} --- Path to the benign traffic CSV.
+    \item \texttt{dos\_dir} --- Path to the directory containing DoS attack CSVs.
+\end{itemize}
+
+\noindent\textbf{Behavior:}
+\begin{itemize}
+    \item Loads the benign CSV via \texttt{load\_csv()}.
+    \item Iterates over all \texttt{.csv} files in the DoS directory, loading each.
+    \item Concatenates all DataFrames using \texttt{pd.concat(axis=0, ignore\_index=True)}.
+    \item Logs the final combined shape.
+\end{itemize}
+
+
+\section{Memory Management \& Row Limits}
+
+The data loader implements two safety mechanisms to prevent memory exhaustion:
+
+\begin{enumerate}
+    \item \textbf{File Size Check:} Before loading, the file size is checked against the configured limit:
+    \begin{verbatim}
+max_file_size_mb = CONFIG['data_loading']['max_file_size_mb']
+                 = 4096 (default)
+    \end{verbatim}
+    If the file exceeds this limit, loading is rejected with an error log. This prevents accidental processing of extremely large files.
+
+    \item \textbf{Row Limit:} When loading with pandas, the \texttt{nrows} parameter limits the number of rows read:
+    \begin{verbatim}
+max_rows_per_file = CONFIG['data_loading']['max_rows_per_file']
+                  = 100000 (default)
+    \end{verbatim}
+    \texttt{pd.read\_csv(filepath, nrows=max\_rows)} reads only the first 100,000 rows. This is particularly important for multi-GB datasets where loading all rows would exceed available RAM. If \texttt{max\_rows} is set to \texttt{None} in the config, all rows are loaded (no limit applied).
+\end{enumerate}
+
+
+\section{Column Standardization}
+
+After loading the CSV, column names are standardized to ensure consistent matching with the configured feature list:
+
+\begin{verbatim}
+df.columns = df.columns.str.strip().str.lower()
+\end{verbatim}
+
+This two-step normalization:
+\begin{enumerate}
+    \item \texttt{str.strip()} --- Removes leading and trailing whitespace from column names.
+    \item \texttt{str.lower()} --- Converts all column names to lowercase.
+\end{enumerate}
+
+\noindent\textbf{Examples:}
+\begin{itemize}
+    \item \texttt{" Flow Duration "} $\rightarrow$ \texttt{"flow duration"}
+    \item \texttt{"Total Fwd Packets"} $\rightarrow$ \texttt{"total fwd packets"}
+\end{itemize}
+
+The configured \texttt{selected\_features} list is also normalized using the same transformation, ensuring that feature matching is case-insensitive and whitespace-tolerant.
+
+
+\section{Feature Selection \& Intersection}
+
+Not all CSV files contain exactly the same columns. The data loader handles this through intersection-based feature selection:
+
+\begin{enumerate}
+    \item The desired features are taken from \texttt{config.yaml}'s \texttt{selected\_features} list (33 features).
+
+    \item The label column is automatically appended to the selection list if it exists in the DataFrame:
+    \begin{verbatim}
+if 'label' in df.columns and 'label' not in selected_features:
+    selected_features.append('label')
+    \end{verbatim}
+
+    \item The intersection of desired features and available columns is computed:
+    \begin{verbatim}
+existing_cols = [c for c in selected_features if c in df.columns]
+missing_cols  = [c for c in selected_features if c not in df.columns]
+    \end{verbatim}
+
+    \item Missing columns are logged as warnings (\texttt{WARNING} level) but do not cause the loading to fail.
+
+    \item The DataFrame is filtered to keep only the intersection columns: \texttt{df = df[existing\_cols]}.
+\end{enumerate}
+
+This approach ensures that CSVs with extra columns are trimmed appropriately, CSVs missing some columns still load successfully, and the label column is preserved when available.
+
+
+\section{Data Cleaning (Infinite Values, NaN Handling)}
+
+After feature selection, the data loader performs two cleaning operations:
+
+\begin{enumerate}
+    \item \textbf{Infinite Value Replacement:}
+    \begin{verbatim}
+df.replace([float('inf'), float('-inf')], float('nan'), inplace=True)
+    \end{verbatim}
+    Both positive and negative infinity values are replaced with NaN. This handles edge cases in network flow calculations where division by zero produces infinity (e.g., \texttt{flow bytes/s} when duration is near zero).
+
+    \item \textbf{NaN Row Removal:}
+    \begin{verbatim}
+df.dropna(inplace=True)
+    \end{verbatim}
+    All rows containing any NaN value (including those just converted from infinity) are removed from the DataFrame.
+\end{enumerate}
+
+This strategy ensures that no invalid numerical values reach the ML models, which could cause training instability or prediction errors.
+
+
+\section{Label Processing (Binary Encoding)}
+
+During training, the system uses binary labels:
+\begin{itemize}
+    \item \textbf{0} = Benign (normal traffic)
+    \item \textbf{1} = DoS/DDoS (attack traffic)
+\end{itemize}
+
+The \texttt{label\_override} parameter in \texttt{load\_csv()} allows explicit label assignment. When loading benign data, the label column from the CSV is preserved (already contains ``BENIGN''); when loading DoS data, each file retains its original attack type label.
+
+The binary encoding for XGBoost training is performed downstream in \texttt{run.py}:
+\begin{itemize}
+    \item The label column is checked for the string ``BENIGN'' (case-insensitive).
+    \item Benign flows are mapped to 0, all other labels are mapped to 1.
+    \item This creates a binary classification target for the XGBoost model.
+\end{itemize}
+
+
+\section{Multi-File Dataset Aggregation}
+
+The \texttt{combine\_datasets()} function handles the training data preparation workflow:
+
+\begin{enumerate}
+    \item \textbf{Step 1:} Load the benign dataset from:\\ \texttt{Dataset/PolishedBenign/Polished\_benign.csv}
+
+    \item \textbf{Step 2:} Iterate over all CSV files in the DoS directory:\\ \texttt{Dataset/PolishedDos/}\\ Each of the 10 DoS attack type CSVs is loaded individually.
+
+    \item \textbf{Step 3:} Each loaded DataFrame is appended to a list.
+
+    \item \textbf{Step 4:} All DataFrames are concatenated vertically:
+    \begin{verbatim}
+combined_df = pd.concat(dfs, axis=0, ignore_index=True)
+    \end{verbatim}
+    The \texttt{ignore\_index=True} parameter resets the row indices to create a continuous sequence.
+
+    \item \textbf{Step 5:} The final combined shape is logged for verification.
+\end{enumerate}
+
+The result is a single DataFrame containing all benign and DoS flows with consistent features, ready for model training. If no DataFrames were successfully loaded (all files failed), \texttt{None} is returned.
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%            PART IV — MACHINE LEARNING MODELS
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Machine Learning Models}
+
+% ============================================================
+\chapter{XGBoost Classifier Model}
+% ============================================================
+
+\section{Model Overview \& Justification}
+
+XGBoost (eXtreme Gradient Boosting) is a supervised machine learning algorithm used in this system for binary classification of network flows as either Benign (0) or DoS/DDoS (1).
+
+\noindent\textbf{Why XGBoost was chosen:}
+\begin{itemize}
+    \item \textbf{High accuracy on tabular data} --- consistently outperforms other algorithms (Random Forest, SVM, Logistic Regression) in network intrusion detection benchmarks.
+    \item \textbf{Fast inference speed} --- critical for processing hundreds of thousands of flows per detection run.
+    \item \textbf{Native GPU acceleration} --- via the \texttt{hist} tree method with CUDA support, enabling rapid training on large datasets.
+    \item \textbf{Built-in regularization} --- prevents overfitting through L1/L2 regularization and \texttt{max\_depth} constraints.
+    \item \textbf{Handles missing features gracefully} --- important for real-world network data where some features may be unavailable.
+\end{itemize}
+
+The XGBoost model is implemented in \texttt{models/xgboost\_model.py} as the \texttt{XGBoostDetector} class.
+
+
+\section{Algorithm: Gradient Boosted Decision Trees}
+
+XGBoost implements the Gradient Boosted Decision Trees (GBDT) algorithm:
+
+\begin{enumerate}
+    \item An initial prediction is made (base learner --- typically the mean).
+    \item The residuals (errors) between the prediction and actual labels are calculated.
+    \item A new decision tree is trained to predict these residuals.
+    \item The new tree's predictions are added to the ensemble, scaled by the learning rate (eta).
+    \item Steps 2--4 repeat for \texttt{n\_estimators} iterations (100 rounds).
+\end{enumerate}
+
+Each successive tree corrects the errors of the previous ensemble, gradually improving accuracy. The final prediction is the sum of all tree outputs, passed through a logistic (sigmoid) function to produce a probability:
+
+\begin{equation}
+    P(\text{DoS}) = \sigma\!\left(\sum_{t=1}^{T} f_t(x)\right)
+\end{equation}
+
+If $P(\text{DoS}) > 0.5$, the flow is classified as DoS/DDoS (label = 1).\\
+If $P(\text{DoS}) \leq 0.5$, the flow is classified as Benign (label = 0).
+
+
+\section{Architecture \& Hyperparameters}
+
+\subsection{\texttt{max\_depth}, \texttt{learning\_rate}, \texttt{n\_estimators}}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|p{8cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Purpose} \\
+\hline
+\texttt{max\_depth} & 6 & Maximum depth of each decision tree. Controls model complexity. Deeper trees capture more patterns but risk overfitting. \\
+\hline
+\texttt{learning\_rate} & 0.1 & Step size shrinkage (eta). Each tree's contribution is multiplied by this factor. Lower values require more trees but improve generalization. \\
+\hline
+\texttt{n\_estimators} & 100 & Total number of boosting rounds (trees). Combined with \texttt{learning\_rate}=0.1, provides a good accuracy/speed balance. \\
+\hline
+\end{tabular}
+\caption{XGBoost hyperparameters from \texttt{config.yaml}.}
+\end{table}
+
+\subsection{Objective Function (Binary Logistic)}
+
+The objective function is set to \texttt{binary:logistic}:
+\begin{itemize}
+    \item Optimizes log-loss (cross-entropy) between predicted probabilities and actual binary labels (0 or 1).
+    \item Outputs probability scores between 0.0 and 1.0 for each flow.
+    \item The 0.5 threshold separates Benign ($< 0.5$) from DoS/DDoS ($\geq 0.5$).
+\end{itemize}
+
+\noindent Evaluation metrics used during training:
+\begin{itemize}
+    \item \texttt{logloss}: Primary optimization metric.
+    \item \texttt{error}: Classification error rate for monitoring.
+\end{itemize}
+
+\subsection{Tree Method \& GPU Acceleration}
+
+The tree construction method is selected automatically based on hardware:
+
+\begin{itemize}
+    \item \textbf{CPU mode:} \texttt{tree\_method = "hist"} with \texttt{device = "cpu"}. Uses the histogram-based algorithm for efficient CPU training.
+    \item \textbf{GPU mode:} \texttt{tree\_method = "hist"} with \texttt{device = "cuda"}. Activated when \texttt{nvidia-smi} is detected (GPU drivers present). Provides 5--10$\times$ speedup for training on large datasets.
+\end{itemize}
+
+Hardware detection is performed by the \texttt{get\_device()} function (\texttt{src/utils.py}), which:
+\begin{enumerate}
+    \item Checks for CUDA availability via \texttt{torch.cuda.is\_available()} (PyTorch).
+    \item Runs \texttt{nvidia-smi} subprocess to confirm GPU driver presence (XGBoost).
+    \item Returns a dictionary with device information for both frameworks.
+\end{enumerate}
+
+
+\section{Training Process --- Step by Step}
+
+\subsection{Phase 1: Data Preparation}
+
+Training begins in the \texttt{train\_xgboost()} function (\texttt{run.py}):
+\begin{enumerate}
+    \item Load benign traffic: \texttt{Dataset/PolishedBenign/Polished\_benign.csv}
+    \item Load DoS traffic: All 10 CSVs from \texttt{Dataset/PolishedDos/}
+    \item Combine using \texttt{combine\_datasets()} into a single DataFrame.
+    \item The combined dataset contains both benign and attack flows with the 33 selected features plus a label column.
+\end{enumerate}
+
+\subsection{Phase 2: Feature Extraction \& Label Encoding}
+
+\begin{enumerate}
+    \item The label column is converted to binary:
+    \begin{verbatim}
+label_encoded = 0 if label.strip().upper() == "BENIGN" else 1
+    \end{verbatim}
+    \item Feature matrix $X$ = all columns except label.
+    \item Target vector $y$ = the encoded label column.
+    \item $X$ and $y$ are passed as numpy arrays to the training function.
+\end{enumerate}
+
+\subsection{Phase 3: Hardware Detection (GPU/CPU)}
+
+Hardware is detected during \texttt{XGBoostDetector.\_\_init\_\_()}, which calls \texttt{get\_device()} once at instantiation time and stores the result in \texttt{self.device\_info}.
+
+\noindent Inside \texttt{XGBoostDetector.train()}:
+\begin{enumerate}
+    \item Base parameters are assembled from \texttt{config.yaml}: \texttt{objective}, \texttt{max\_depth}, \texttt{learning\_rate}, \texttt{eval\_metric}.
+    \item \texttt{self.device\_info} (set during \texttt{\_\_init\_\_}) is checked:
+    \begin{itemize}
+        \item If GPU available: \texttt{device="cuda"}, \texttt{tree\_method="hist"}
+        \item If CPU only: \texttt{device="cpu"}, \texttt{tree\_method="hist"}
+    \end{itemize}
+    \item The device selection is logged for transparency.
+\end{enumerate}
+
+\subsection{Phase 4: Model Training \& Early Stopping}
+
+\begin{enumerate}
+    \item Training data is wrapped in an \texttt{xgb.DMatrix} (XGBoost's optimized data structure).
+    \item \texttt{xgb.train()} is called with:
+    \begin{itemize}
+        \item \texttt{params}: The parameter dictionary
+        \item \texttt{dtrain}: The DMatrix training data
+        \item \texttt{num\_boost\_round}: 100 (from \texttt{n\_estimators})
+        \item \texttt{evals}: Training set performance tracking
+        \item \texttt{early\_stopping\_rounds}: 10 (stop if no improvement for 10 rounds)
+        \item \texttt{verbose\_eval}: True (log each round)
+    \end{itemize}
+    \item Training completes when either all 100 rounds are finished, or early stopping triggers (10 rounds without logloss improvement).
+\end{enumerate}
+
+\subsection{Phase 5: Model Persistence (JSON)}
+
+\begin{enumerate}
+    \item The trained model is saved using \texttt{xgb.Booster.save\_model()}: \texttt{models/xgboost\_model.json}
+    \item The JSON format stores all decision tree structures, split conditions (feature, threshold), leaf values (prediction contributions), and model metadata.
+    \item JSON format is human-readable and portable across platforms.
+\end{enumerate}
+
+
+\section{Detection Process --- Step by Step}
+
+\subsection{Input File Reception \& Validation}
+
+\begin{enumerate}
+    \item The input file is received via \texttt{detect\_mode(input\_file)} in \texttt{run.py}.
+    \item \texttt{InputHandler} validates the file (existence, format).
+    \item The file is processed into a DataFrame with 33 features.
+\end{enumerate}
+
+\subsection{Feature Preparation \& Alignment}
+
+\begin{enumerate}
+    \item The feature list from \texttt{config.yaml} is retrieved.
+    \item Any missing features in the DataFrame are filled with 0.0.
+    \item Features are selected in the exact order expected by the model: \texttt{X = df[feature\_list].values}
+    \item The result is a numpy array with shape \texttt{(n\_flows, 33)}.
+\end{enumerate}
+
+\subsection{Model Loading (Deserialization)}
+
+\begin{enumerate}
+    \item \texttt{XGBoostDetector} is instantiated with config.
+    \item The \texttt{load()} method is called with path: \texttt{models/xgboost\_model.json}
+    \item An empty \texttt{xgb.Booster()} is created.
+    \item \texttt{load\_model()} deserializes the JSON into the Booster object.
+    \item If the file is not found, an error is logged and detection aborts.
+\end{enumerate}
+
+\subsection{Prediction Execution (DMatrix)}
+
+\begin{enumerate}
+    \item Input features are wrapped in \texttt{xgb.DMatrix(X)}.
+    \item \texttt{model.predict(dtest)} executes the trained ensemble --- each flow passes through all trees, contributions are summed and passed through sigmoid.
+    \item Output: probability array with values between 0.0 and 1.0.
+\end{enumerate}
+
+\subsection{Confidence Scoring}
+
+\begin{enumerate}
+    \item Probabilities are thresholded at 0.5:
+    \begin{verbatim}
+preds = (probs > 0.5).astype(int)
+    \end{verbatim}
+    \item The probability value itself serves as the confidence score:
+    \begin{itemize}
+        \item $P = 0.99$: Very confident DoS/DDoS detection
+        \item $P = 0.51$: Borderline detection (low confidence)
+        \item $P = 0.02$: Very confident Benign classification
+    \end{itemize}
+    \item Both predictions and probabilities are returned to the Hybrid Engine for decision fusion.
+\end{enumerate}
+
+
+\section{Attack Detection Mechanism}
+
+\subsection{Benign vs Attack Traffic Characteristics}
+
+XGBoost learns to distinguish benign from attack traffic by identifying feature patterns:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Feature} & \textbf{Benign} & \textbf{DoS/DDoS} \\
+\hline
+\texttt{flow duration} & Variable (seconds--min) & Very short (milliseconds) \\
+\hline
+\texttt{total fwd packets} & Low--moderate & Extremely high \\
+\hline
+\texttt{fwd packet length std} & High variance (diverse) & Low variance (uniform) \\
+\hline
+\texttt{flow bytes/s} & Normal range & Orders of magnitude higher \\
+\hline
+\texttt{flow iat mean} & Variable (user-driven) & Nearly zero (automated) \\
+\hline
+\end{tabular}
+\caption{Benign vs attack traffic feature comparison.}
+\end{table}
+
+\subsection{Decision Tree Example}
+
+A simplified visualization of how one tree in the ensemble makes a decision:
+
+\begin{verbatim}
+    [flow bytes/s > 100000?]
+          |             |
+         YES            NO
+          |             |
+    [fwd pkt len     [flow iat mean
+     std < 10?]       < 100?]
+      |       |        |       |
+     YES     NO       YES     NO
+      |       |        |       |
+    DoS   Benign     DoS   Benign
+   (0.8)  (0.3)     (0.6)  (0.1)
+\end{verbatim}
+
+The actual trained model contains 100 such trees, each contributing a small prediction that is summed to produce the final probability.
+
+\subsection{Feature Importance Rankings}
+
+XGBoost internally tracks feature importance --- which features contribute most to the split decisions. Based on the training on CIC-DDoS2019 data, the top features typically include:
+\begin{enumerate}
+    \item \texttt{flow bytes/s} (most discriminative)
+    \item \texttt{flow packets/s}
+    \item \texttt{flow iat mean}
+    \item \texttt{total fwd packets}
+    \item \texttt{fwd packet length std}
+\end{enumerate}
+
+
+\section{Supported Attack Types (10 Categories)}
+
+The XGBoost model is trained on 10 distinct DoS/DDoS attack types from the CIC-DDoS2019 dataset:
+
+\subsection{DNS Amplification}
+\textbf{Protocol:} UDP port 53. \textbf{Mechanism:} Small DNS queries with spoofed source IPs trigger large DNS responses directed at the victim. \textbf{Amplification factor:} 28--54$\times$. \textbf{Key features:} High \texttt{flow bytes/s}, large backward packet lengths.
+
+\subsection{LDAP Amplification}
+\textbf{Protocol:} UDP port 389. \textbf{Mechanism:} Exploits LDAP servers to reflect and amplify traffic. \textbf{Amplification factor:} 46--55$\times$. \textbf{Key features:} Extreme \texttt{bwd packet length max}, low forward packet count.
+
+\subsection{MSSQL Amplification}
+\textbf{Protocol:} UDP port 1434. \textbf{Mechanism:} MSSQL Browser Service used for reflection attacks. \textbf{Amplification factor:} $\sim$25$\times$. \textbf{Key features:} Characteristic port usage, uniform packet sizes.
+
+\subsection{NetBIOS Amplification}
+\textbf{Protocol:} UDP ports 137/138. \textbf{Mechanism:} NetBIOS name service queries used for amplification. \textbf{Amplification factor:} 2.5--4$\times$. \textbf{Key features:} Small \texttt{total fwd packets}, specific port patterns.
+
+\subsection{NTP Amplification}
+\textbf{Protocol:} UDP port 123. \textbf{Mechanism:} Monlist command requests produce large response lists. \textbf{Amplification factor:} 556$\times$ (one of the largest). \textbf{Key features:} Extremely high backward/forward byte ratio.
+
+\subsection{SNMP Amplification}
+\textbf{Protocol:} UDP port 161. \textbf{Mechanism:} GetBulkRequest commands generate large SNMP responses. \textbf{Amplification factor:} 6--25$\times$. \textbf{Key features:} High backward packet lengths, low forward counts.
+
+\subsection{SSDP Amplification}
+\textbf{Protocol:} UDP port 1900. \textbf{Mechanism:} Simple Service Discovery Protocol search requests are reflected from UPnP devices. \textbf{Amplification factor:} $\sim$30$\times$. \textbf{Key features:} Port 1900, multicast addresses.
+
+\subsection{SYN Flood}
+\textbf{Protocol:} TCP. \textbf{Mechanism:} Half-open TCP connections overwhelm the victim's connection state table. No amplification --- direct volumetric attack. \textbf{Key features:} Extremely high \texttt{fwd psh flags} = 0 (no data push), very short flow duration, high packets/s.
+
+\subsection{TFTP Amplification}
+\textbf{Protocol:} UDP port 69. \textbf{Mechanism:} TFTP read requests trigger multi-packet file transfers to the spoofed source. \textbf{Amplification factor:} $\sim$60$\times$. \textbf{Key features:} Large \texttt{total length of bwd packets}, multi-packet backward flows.
+
+\subsection{UDP Flood}
+\textbf{Protocol:} UDP (various ports). \textbf{Mechanism:} Volumetric flooding with random or targeted UDP packets. No amplification --- direct volumetric attack. \textbf{Key features:} Extremely high \texttt{flow packets/s}, near-zero IAT, uniform packet sizes.
+
+
+\section{Per-Attack-Type Detection Rates}
+
+Based on testing with the CIC-DDoS2019 dataset:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|}
+\hline
+\textbf{Attack Type} & \textbf{Detection Rate} \\
+\hline
+DNS Amplification & $\sim$99\% \\
+\hline
+LDAP Amplification & $\sim$99\% \\
+\hline
+MSSQL Amplification & $\sim$98\% \\
+\hline
+NetBIOS Amplification & $\sim$97\% \\
+\hline
+NTP Amplification & $\sim$99\% \\
+\hline
+SNMP Amplification & $\sim$98\% \\
+\hline
+SSDP Amplification & $\sim$98\% \\
+\hline
+SYN Flood & $\sim$99\% \\
+\hline
+TFTP Amplification & $\sim$97\% \\
+\hline
+UDP Flood & $\sim$98\% \\
+\hline
+\textbf{Overall} & $\geq$ \textbf{95\%} \\
+\hline
+\end{tabular}
+\caption{Per-attack-type detection rates.}
+\end{table}
+
+
+\section{Model Performance \& Accuracy Metrics}
+
+\begin{itemize}
+    \item \textbf{Overall accuracy:} $\geq$ 95\% on known attack types.
+    \item \textbf{False positive rate:} $\leq$ 5\% on benign traffic.
+    \item \textbf{Inference speed:} $\sim$0.1ms per flow (CPU), $\sim$0.01ms per flow (GPU).
+    \item \textbf{Model size:} $\sim$2--5 MB (JSON format).
+    \item \textbf{Training time:} $\sim$30--60 seconds on $\sim$200k flows (CPU), $\sim$5--10 seconds (GPU).
+\end{itemize}
+
+
+\section{Advantages \& Limitations}
+
+\noindent\textbf{Advantages:}
+\begin{itemize}
+    \item Extremely high accuracy on the 10 trained attack types.
+    \item Fast inference suitable for batch processing of large files.
+    \item Interpretable --- feature importance and tree structures can be examined.
+    \item GPU acceleration for large-scale training.
+    \item Robust to noisy features and missing values.
+\end{itemize}
+
+\noindent\textbf{Limitations:}
+\begin{itemize}
+    \item Cannot detect unknown (zero-day) attack types --- only classifies patterns seen during training.
+    \item Binary classification only --- does not identify the specific attack subtype (DNS vs LDAP vs NTP etc.), only ``DoS'' or ``Not DoS.''
+    \item Requires labeled training data --- supervised learning depends on quality labeled datasets.
+    \item May overfit if \texttt{max\_depth} or \texttt{n\_estimators} are set too high.
+\end{itemize}
+
+These limitations are addressed by the Kitsune autoencoder (Chapter 11) and the Hybrid Engine (Chapter 12).
+
+
+% ============================================================
+\chapter{Kitsune AutoEncoder Model}
+% ============================================================
+
+\section{Model Overview \& Justification}
+
+Kitsune is an unsupervised anomaly detection model based on a PyTorch autoencoder neural network. Unlike XGBoost (which requires labeled data), Kitsune learns only from benign traffic and flags anything that deviates significantly from normal patterns as anomalous.
+
+\noindent\textbf{Why Kitsune was chosen:}
+\begin{itemize}
+    \item \textbf{Zero-day detection} --- can identify novel attacks never seen during training by measuring how ``abnormal'' traffic patterns are.
+    \item \textbf{No attack labels needed} --- trains exclusively on benign data, making it independent of attack type catalogs.
+    \item \textbf{Complementary to XGBoost} --- covers the critical gap where supervised models fail (unknown attack patterns).
+    \item \textbf{Reconstruction-based scoring} --- provides a continuous anomaly score (RMSE) rather than a binary label, enabling nuanced decision making.
+    \item \textbf{PyTorch implementation} --- supports GPU acceleration and modern deep learning best practices.
+\end{itemize}
+
+The Kitsune model is implemented across two classes in \texttt{models/kitsune.py}:
+\begin{itemize}
+    \item \texttt{AutoEncoder} (\texttt{nn.Module}): The neural network architecture.
+    \item \texttt{KitNET}: The training/detection wrapper class.
+\end{itemize}
+
+
+\section{Conceptual Foundation (Anomaly Detection)}
+
+Kitsune operates on a fundamental principle:
+
+\begin{quote}
+\textit{``If a model learns what NORMAL looks like, anything it cannot reproduce accurately is ABNORMAL.''}
+\end{quote}
+
+The approach:
+\begin{enumerate}
+    \item Train the autoencoder to reconstruct benign traffic features.
+    \item During detection, pass each flow through the encoder and decoder.
+    \item Compare the original input to the reconstruction.
+    \item If the reconstruction error (RMSE) is high, the input is ``abnormal'' --- the model has never seen anything like it during training.
+\end{enumerate}
+
+This is fundamentally different from XGBoost's approach:
+\begin{itemize}
+    \item \textbf{XGBoost asks:} ``Does this look like a known attack?''
+    \item \textbf{Kitsune asks:} ``Does this look like normal traffic?''
+\end{itemize}
+
+
+\section{Autoencoder Neural Network Architecture}
+
+\subsection{Layer-by-Layer Breakdown}
+
+The autoencoder consists of 4 linear layers organized in an encoder-decoder structure. The hidden dimensions are calculated from the \texttt{hidden\_ratio} parameter:
+
+\begin{verbatim}
+h_dim      = int(input_dim * hidden_ratio) = int(33 * 0.75) = 24
+bottleneck = h_dim // 2                    = 24 // 2        = 12
+\end{verbatim}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|l|l|l|}
+\hline
+\textbf{Layer} & \textbf{Component} & \textbf{Transformation} & \textbf{Activation} \\
+\hline
+1 & Encoder & Linear($33 \to 24$) & ReLU \\
+\hline
+2 & Encoder & Linear($24 \to 12$) & ReLU \\
+\hline
+3 & Decoder & Linear($12 \to 24$) & ReLU \\
+\hline
+4 & Decoder & Linear($24 \to 33$) & None \\
+\hline
+\end{tabular}
+\caption{Autoencoder layer configuration.}
+\end{table}
+
+\subsection{Encoder (Compression)}
+
+The encoder compresses the 33-feature input into a 12-dimensional latent representation:
+
+\begin{itemize}
+    \item \textbf{Layer 1:} \texttt{Linear(33 $\to$ 24)} followed by ReLU activation. Reduces dimensionality while preserving important patterns. ReLU introduces non-linearity, enabling the network to learn complex feature interactions.
+    \item \textbf{Layer 2:} \texttt{Linear(24 $\to$ 12)} followed by ReLU activation. Further compresses to the bottleneck dimension, forcing the network to learn only the most essential patterns of benign traffic.
+\end{itemize}
+
+\subsection{Bottleneck (Latent Space)}
+
+The bottleneck is the 12-dimensional compressed representation:
+\begin{itemize}
+    \item Contains the ``essence'' of what makes traffic look normal.
+    \item During training, the network learns to encode benign patterns into this compact space.
+    \item Attack traffic produces distorted latent representations because the encoder has never learned to compress attack patterns.
+\end{itemize}
+
+\subsection{Decoder (Reconstruction)}
+
+The decoder attempts to reconstruct the original 33 features from the 12-dimensional bottleneck:
+
+\begin{itemize}
+    \item \textbf{Layer 3:} \texttt{Linear(12 $\to$ 24)} followed by ReLU activation. Begins expanding back toward the original dimensionality.
+    \item \textbf{Layer 4:} \texttt{Linear(24 $\to$ 33)} --- no activation function. Produces the final reconstruction. No activation on the final layer allows the output to match the full range of feature values.
+\end{itemize}
+
+
+\section{Mathematical Algorithm}
+
+\subsection{RMSE (Root Mean Square Error)}
+
+The anomaly score for each flow is the RMSE between the original input and its reconstruction:
+
+\begin{equation}
+    \text{RMSE} = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \hat{x}_i)^2}
+\end{equation}
+
+Where $x_i$ = original feature value, $\hat{x}_i$ = reconstructed value, and $N$ = number of features (33).
+
+\noindent Implemented in PyTorch as:
+\begin{verbatim}
+scores = torch.sqrt(torch.mean((X_tensor - recons) ** 2, dim=1))
+\end{verbatim}
+
+\subsection{Mean Squared Error (MSE) Loss}
+
+During training, the loss function is MSE:
+
+\begin{equation}
+    \text{MSE} = \frac{1}{N} \sum_{i=1}^{N} (x_i - \hat{x}_i)^2
+\end{equation}
+
+The optimizer (Adam) minimizes MSE over all training batches, teaching the network to reconstruct benign traffic as accurately as possible.
+
+\subsection{Dynamic Threshold Calculation ($\mu + k\sigma$)}
+
+After training, the anomaly threshold is calculated from the training data's reconstruction errors:
+
+\begin{equation}
+    \tau = \mu_{\text{RMSE}} + k \cdot \sigma_{\text{RMSE}}
+\end{equation}
+
+Where $\mu_{\text{RMSE}}$ = mean RMSE across all benign training samples, $\sigma_{\text{RMSE}}$ = standard deviation, and $k$ = \texttt{threshold\_std\_factor} from \texttt{config.yaml} (default $k = 3.0$).
+
+With $k = 3.0$, the threshold corresponds to 99.7\% of the normal distribution (3-sigma rule). This means 99.7\% of benign flows will have RMSE below the threshold, and only $\sim$0.3\% may be false positives.
+
+
+\section{Hyperparameters Configuration}
+
+\subsection{\texttt{learning\_rate}, \texttt{hidden\_ratio}}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|p{8cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Purpose} \\
+\hline
+\texttt{learning\_rate} & 0.001 & Adam optimizer step size. Controls how fast the network adjusts weights. \\
+\hline
+\texttt{hidden\_ratio} & 0.75 & Ratio of hidden layer size to input dimension. $h\_dim = 33 \times 0.75 = 24$. \\
+\hline
+\end{tabular}
+\caption{Kitsune hyperparameters.}
+\end{table}
+
+\subsection{\texttt{threshold\_std\_factor}}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|c|p{8cm}|}
+\hline
+\textbf{Parameter} & \textbf{Value} & \textbf{Purpose} \\
+\hline
+\texttt{threshold\_std\_factor} & 3.0 & Number of standard deviations above the mean for the anomaly threshold. Higher = less sensitive (fewer alerts). Lower = more sensitive (more alerts). \\
+\hline
+\end{tabular}
+\caption{Kitsune threshold configuration.}
+\end{table}
+
+
+\section{Training Process --- Detailed Walkthrough}
+
+\subsection{Phase 1: Benign Data Preparation}
+
+Training begins in the \texttt{train\_kitsune()} function (\texttt{run.py}):
+\begin{enumerate}
+    \item Load benign traffic: \texttt{Dataset/PolishedBenign/Polished\_benign.csv}
+    \item Drop the label column (unsupervised --- no labels needed).
+    \item Convert to numpy array \texttt{X\_benign}.
+    \item If dataset exceeds 50,000 samples, subsample to 50k to prevent excessive training time.
+\end{enumerate}
+
+\subsection{Phase 2: Model Initialization \& Device Selection}
+
+\begin{enumerate}
+    \item Input dimension is determined: \texttt{input\_dim} = number of features (33).
+    \item \texttt{KitNET} is instantiated with \texttt{input\_dim} and kitsune config.
+    \item \texttt{AutoEncoder(33, hidden\_dim=0.75)} creates the 4-layer network.
+    \item Device is selected: \texttt{torch.cuda.is\_available()} $\to$ \texttt{cuda} (GPU), otherwise $\to$ \texttt{cpu}.
+    \item Model is moved to the selected device: \texttt{model.to(device)}.
+    \item Adam optimizer is initialized with \texttt{learning\_rate = 0.001}.
+    \item \texttt{MSELoss} criterion is set.
+\end{enumerate}
+
+\subsection{Phase 3: Training Loop (Epochs \& Batches)}
+
+\begin{enumerate}
+    \item Training data is converted to a PyTorch \texttt{FloatTensor}.
+    \item A \texttt{DataLoader} is created with \texttt{batch\_size=32} and \texttt{shuffle=True}.
+    \item For each epoch (default: 10 epochs):
+    \begin{enumerate}
+        \item For each batch: zero gradients $\to$ forward pass $\to$ compute MSE loss $\to$ backward pass $\to$ update weights.
+        \item Accumulate batch loss.
+        \item Every 5 epochs, log the average loss.
+    \end{enumerate}
+    \item The model learns to reconstruct benign traffic features.
+\end{enumerate}
+
+\subsection{Phase 4: Threshold Calculation}
+
+After training completes:
+\begin{enumerate}
+    \item Set model to eval mode (disables dropout, batchnorm if present).
+    \item Run all training data through the model (no gradients).
+    \item Compute RMSE per sample: \texttt{loss = sqrt(mean((X - reconstruction)\^{}2, dim=1))}
+    \item Convert to numpy array.
+    \item Calculate threshold: $\tau = \texttt{mean\_loss} + 3.0 \times \texttt{std\_loss}$
+    \item Log the threshold, mean, and std values.
+\end{enumerate}
+
+\subsection{Phase 5: Model Persistence (PKL)}
+
+\begin{enumerate}
+    \item The model state is packaged into a dictionary:
+    \begin{itemize}
+        \item \texttt{model\_state}: PyTorch \texttt{state\_dict} (weights and biases)
+        \item \texttt{threshold}: Computed anomaly threshold
+        \item \texttt{input\_dim}: 33
+        \item \texttt{config}: Kitsune configuration dictionary
+    \end{itemize}
+    \item Serialized using Python's \texttt{pickle} module: \texttt{models/kitsune\_model.pkl}
+    \item SHA-256 checksum is computed and saved: \texttt{models/kitsune\_model.pkl.sha256}
+    \item The checksum ensures model integrity --- if the \texttt{.pkl} file is corrupted or tampered with, loading will fail with a clear error.
+\end{enumerate}
+
+
+\section{Detection Process --- Step by Step}
+
+\subsection{Model Loading \& Restoration}
+
+\begin{enumerate}
+    \item \texttt{KitNET.load(path)} is called as a classmethod.
+    \item File existence is verified.
+    \item Checksum verification:
+    \begin{enumerate}
+        \item Read expected hash from \texttt{.sha256} file.
+        \item Compute SHA-256 of the \texttt{.pkl} file.
+        \item Compare: if mismatch, raise \texttt{ValueError} (corruption/tampering).
+        \item If no checksum file exists, log warning and proceed.
+    \end{enumerate}
+    \item Deserialize the pkl file: reconstruct \texttt{KitNET} instance, load weights via \texttt{model.load\_state\_dict()}, restore threshold, set model to eval mode.
+\end{enumerate}
+
+\subsection{Input Processing \& Tensor Conversion}
+
+\begin{enumerate}
+    \item Input features (numpy array $X$) are received from the Hybrid Engine.
+    \item Converted to PyTorch \texttt{FloatTensor}: \texttt{X\_tensor = torch.FloatTensor(X).to(device)}
+    \item Tensor is moved to the appropriate device (CPU or GPU).
+\end{enumerate}
+
+\subsection{Reconstruction (Forward Pass)}
+
+\begin{enumerate}
+    \item Model is set to eval mode.
+    \item \texttt{torch.no\_grad()} context --- no gradient computation needed.
+    \item Forward pass: \texttt{recons = model(X\_tensor)} --- passes through encoder $\to$ bottleneck $\to$ decoder.
+    \item Output shape matches input: \texttt{(n\_flows, 33)}.
+\end{enumerate}
+
+\subsection{Anomaly Scoring (RMSE)}
+
+\begin{enumerate}
+    \item Compute per-flow RMSE: \texttt{scores = sqrt(mean((X\_tensor - recons)\^{}2, dim=1))}
+    \item Convert to numpy array: \texttt{return scores.cpu().numpy()}
+    \item Each flow now has a continuous anomaly score:
+    \begin{itemize}
+        \item Low RMSE (e.g., 0.01): Normal traffic (well-reconstructed).
+        \item High RMSE (e.g., 5.0): Anomalous traffic (poorly reconstructed).
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Threshold Comparison \& Verdict}
+
+The Hybrid Engine (Chapter 12) performs the comparison:
+\begin{itemize}
+    \item If RMSE $>$ threshold: Flag as ``Anomaly''
+    \item If RMSE $\leq$ threshold: No anomaly flag
+\end{itemize}
+
+The verdict is not made by Kitsune alone --- the Hybrid Engine combines this with XGBoost's prediction to produce the final classification.
+
+
+\section{How Kitsune Detects Attacks}
+
+\subsection{Feature Distribution Mismatch}
+
+Attack traffic has fundamentally different feature distributions than benign traffic. Benign flows exhibit moderate packets, variable sizes, and human-driven timing; attack flows show extreme packets, uniform sizes, and machine-driven timing. The autoencoder, trained only on benign patterns, cannot accurately reconstruct attack features, resulting in high RMSE.
+
+\subsection{Pattern Novelty}
+
+Because Kitsune has never seen attack traffic during training, any attack-like pattern is ``novel'' to the model. The encoder cannot compress it into the learned latent space, and the decoder cannot reconstruct it --- producing high reconstruction error.
+
+\subsection{Statistical Outliers}
+
+Even subtle attacks that share some characteristics with benign traffic will have at least a few features that fall outside the training distribution. The RMSE aggregates errors across all 33 features, making it sensitive to multi-dimensional anomalies.
+
+\subsection{Attack Type Detection Examples}
+
+\begin{itemize}
+    \item \textbf{DNS Amplification:} Large \texttt{bwd\_packet\_length} and extreme \texttt{flow bytes/s} are never seen in benign training data $\to$ high RMSE.
+    \item \textbf{SYN Flood:} Near-zero \texttt{flow iat mean} with zero backward packets creates a pattern the autoencoder cannot reconstruct.
+    \item \textbf{Zero-Day:} Even previously unknown attack types will produce unusual feature combinations that increase reconstruction error.
+\end{itemize}
+
+
+\section{Process Segmentation (Training \& Detection Phases)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Phase} & \textbf{Input} & \textbf{Output} & \textbf{Frequency} \\
+\hline
+Training & Benign traffic only & Trained model + threshold & Once (or retrain) \\
+\hline
+Detection & Unknown traffic & Anomaly scores per flow & Every detection run \\
+\hline
+\end{tabular}
+\caption{Kitsune operational phases.}
+\end{table}
+
+
+\section{Performance Characteristics \& Accuracy}
+
+\begin{itemize}
+    \item \textbf{Anomaly detection rate:} Reliably detects traffic that deviates significantly from benign baseline.
+    \item \textbf{False positive rate:} $\sim$0.3\% (by design, 3-sigma threshold).
+    \item \textbf{Inference speed:} $\sim$0.5ms per flow (CPU), $\sim$0.05ms per flow (GPU).
+    \item \textbf{Model size:} $\sim$50--100 KB (pkl format).
+    \item \textbf{Training time:} $\sim$10--30 seconds on 50k benign samples.
+\end{itemize}
+
+
+\section{Advantages \& Limitations}
+
+\noindent\textbf{Advantages:}
+\begin{itemize}
+    \item Detects zero-day attacks --- no prior knowledge of attack patterns required.
+    \item Continuous anomaly scoring --- provides granularity beyond binary classification.
+    \item Small model size and fast inference.
+    \item GPU-accelerated training and detection via PyTorch.
+    \item Model integrity verification through SHA-256 checksums.
+\end{itemize}
+
+\noindent\textbf{Limitations:}
+\begin{itemize}
+    \item Cannot identify the specific attack type --- only says ``anomalous'' or ``normal.''
+    \item Sensitive to the quality of benign training data --- contaminated training data will raise the threshold and reduce sensitivity.
+    \item May flag legitimate unusual traffic as anomalous (false positives for rare-but-benign patterns).
+    \item Threshold requires tuning per deployment environment.
+\end{itemize}
+
+These limitations are addressed by combining Kitsune with XGBoost through the Hybrid Engine (Chapter 12).
+
+
+\section{Threshold Tuning Guidelines}
+
+The \texttt{threshold\_std\_factor} parameter controls sensitivity:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|l|l|p{5cm}|}
+\hline
+\textbf{$k$ value} & \textbf{Sensitivity} & \textbf{FP Rate} & \textbf{Use Case} \\
+\hline
+2.0 & High & $\sim$5\% & Critical systems where missing an attack is costly. \\
+\hline
+3.0 (default) & Balanced & $\sim$0.3\% & Good for most deployments. \\
+\hline
+4.0 & Low & $\sim$0.01\% & High-traffic environments where false positives are operationally expensive. \\
+\hline
+\end{tabular}
+\caption{Threshold tuning guidelines.}
+\end{table}
+
+To tune: Run detection on a known-benign dataset. If false positive rate is too high, increase $k$. If detection rate on known attacks is too low, decrease $k$.
+
+
+% ============================================================
+\chapter{Hybrid Decision Engine}
+% ============================================================
+
+\section{What is the Hybrid Engine?}
+
+The Hybrid Decision Engine (\texttt{models/hybrid.py}) is the central intelligence component that combines outputs from both XGBoost and Kitsune to produce a single, unified verdict for each network flow. It implements decision fusion, heuristic overrides, and confidence scoring.
+
+The \texttt{HybridDetector} class orchestrates the entire detection pipeline by:
+\begin{enumerate}
+    \item Running both models on the same input data.
+    \item Applying hierarchical decision logic.
+    \item Overriding false positives with heuristic safety checks.
+    \item Generating human-readable reason strings for each decision.
+\end{enumerate}
+
+
+\section{Why the Hybrid Engine Was Needed}
+
+\subsection{The Single-Model Problem}
+
+\noindent\textbf{Using only XGBoost:}
+\begin{itemize}
+    \item Misses zero-day attacks (unseen patterns).
+    \item Cannot detect novel attack types not in training data.
+\end{itemize}
+
+\noindent\textbf{Using only Kitsune:}
+\begin{itemize}
+    \item Cannot identify the specific attack type.
+    \item May flag unusual-but-benign traffic as anomalous.
+    \item Lower precision compared to supervised classification.
+\end{itemize}
+
+\subsection{The Hybrid Solution}
+
+By combining both models, the system achieves:
+\begin{itemize}
+    \item Known attack detection via XGBoost (high precision).
+    \item Unknown attack detection via Kitsune (high coverage).
+    \item Reduced false positives through heuristic overrides.
+    \item Comprehensive verdict with confidence scoring.
+\end{itemize}
+
+
+\section{Hybrid Engine Architecture}
+
+\subsection{System Components Diagram}
+
+\begin{verbatim}
+    +-----------------------------------------------------------+
+    |                   HYBRID DECISION ENGINE                  |
+    |                                                           |
+    |  +------------------+    +------------------+             |
+    |  |   XGBoost        |    |   Kitsune         |            |
+    |  |   Classifier     |    |   Autoencoder     |            |
+    |  |                  |    |                   |            |
+    |  |  Input: X (33f)  |    |  Input: X (33f)   |            |
+    |  |  Output:         |    |  Output:          |            |
+    |  |   - preds (0/1)  |    |   - RMSE scores   |            |
+    |  |   - probs (0-1)  |    |   - threshold     |            |
+    |  +--------+---------+    +--------+----------+            |
+    |           |                       |                       |
+    |           +----------+------------+                       |
+    |                      |                                    |
+    |              +-------v--------+                           |
+    |              | Decision Fusion|                           |
+    |              | Logic          |                           |
+    |              +-------+--------+                           |
+    |                      |                                    |
+    |              +-------v--------+                           |
+    |              | Heuristic      |                           |
+    |              | Override System|                           |
+    |              +-------+--------+                           |
+    |                      |                                    |
+    |              +-------v--------+                           |
+    |              | Verdict        |                           |
+    |              | Generator      |                           |
+    |              +----------------+                           |
+    |                                                           |
+    |  Output: final_preds[], reasons[], scores                 |
+    +-----------------------------------------------------------+
+\end{verbatim}
+
+\subsection{Model Orchestrator}
+
+The \texttt{detect()} method runs both models sequentially:
+\begin{verbatim}
+xgb_preds, xgb_probs = self.xgb.predict(X)
+kitsune_scores = self.kitsune.predict(X)
+\end{verbatim}
+
+Both models receive the same feature matrix $X$ (33 features) and operate independently --- neither model's output influences the other's execution.
+
+\subsection{Decision Fusion Logic}
+
+For each flow $i$, the decision logic follows this hierarchy:
+
+\noindent\textbf{Priority 1 --- XGBoost DoS Detection:}\\
+If \texttt{xgb\_label == 1} (DoS/DDoS): verdict = ``DoS/DDoS'', reason = ``XGBoost Confidence: \{probability\}''
+
+\noindent\textbf{Priority 2 --- Kitsune Anomaly Detection:}\\
+If \texttt{xgb\_label == 0} AND \texttt{kitsune\_score > threshold}: verdict = ``Anomaly'', reason = ``Kitsune RMSE: \{score\} > \{threshold\}''
+
+\noindent\textbf{Priority 3 --- Clean Traffic:}\\
+If \texttt{xgb\_label == 0} AND \texttt{kitsune\_score $\leq$ threshold}: verdict = ``Benign'', reason = ``Clean''
+
+\subsection{Heuristic Override System}
+
+After the initial verdict, the \texttt{\_is\_safe\_broadcast()} method checks for false positives caused by normal network broadcasts:
+
+\noindent\textbf{Override condition:}
+\begin{itemize}
+    \item verdict $\neq$ ``Benign'' (flow was flagged)
+    \item \texttt{input\_df} is available (raw data with IP/port columns)
+    \item Flow matches safe broadcast profile
+\end{itemize}
+
+\noindent\textbf{Safe broadcast criteria:}
+\begin{enumerate}
+    \item \textbf{Volume check:} \texttt{total fwd packets} $\leq$ 10 (low volume). If volume exceeds 10, the override does not apply.
+    \item \textbf{IP check:} Destination is broadcast (\texttt{.255}) or multicast (\texttt{224.x.x.x}, \texttt{239.x.x.x}, or \texttt{255.255.255.255}).
+\end{enumerate}
+
+The code also computes a safe port set (\{137, 138, 1900, 5353, 67, 68\}) but the current return logic does not use the port check --- the decision is based solely on volume + IP pattern.
+
+If both criteria are met: verdict = ``Benign'', reason = ``Clean (Safe Broadcast)''
+
+\subsection{Verdict Generator}
+
+The final output dictionary contains:
+\begin{itemize}
+    \item \texttt{xgb\_preds}: Array of XGBoost binary predictions (0/1).
+    \item \texttt{xgb\_probs}: Array of XGBoost probability scores.
+    \item \texttt{kitsune\_scores}: Array of Kitsune RMSE values.
+    \item \texttt{final\_preds}: Array of final verdicts [``Benign'', ``DoS/DDoS'', ``Anomaly''].
+    \item \texttt{reasons}: Array of human-readable explanation strings.
+\end{itemize}
+
+
+\section{Roles \& Responsibilities}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{9cm}|}
+\hline
+\textbf{Component} & \textbf{Responsibility} \\
+\hline
+XGBoost & Classify known attack types with high precision. Provide confidence probability. \\
+\hline
+Kitsune & Detect unknown/novel attacks by measuring deviation from benign baseline. \\
+\hline
+Decision Fusion & Combine both outputs using priority-based hierarchical logic. \\
+\hline
+Heuristic Override & Prevent false positives from safe broadcast and multicast traffic. \\
+\hline
+Verdict Generator & Produce final classification and human-readable reason for each flow. \\
+\hline
+\end{tabular}
+\caption{Hybrid Engine component responsibilities.}
+\end{table}
+
+
+\section{Step-by-Step Operation}
+
+\subsection{Step 1: Input Reception}
+
+The \texttt{detect()} method receives:
+\begin{itemize}
+    \item $X$: numpy array of shape \texttt{(n\_flows, 33)} --- feature values.
+    \item \texttt{input\_df}: Optional pandas DataFrame with raw data including IP addresses and ports (for heuristic checks).
+\end{itemize}
+
+\subsection{Step 2: Parallel Model Execution}
+
+\begin{itemize}
+    \item XGBoost \texttt{predict(X)} $\to$ returns preds (binary) and probs (probability).
+    \item Kitsune \texttt{predict(X)} $\to$ returns RMSE scores per flow.
+    \item Both models process all flows at once (vectorized).
+\end{itemize}
+
+\subsection{Step 3: Decision Fusion}
+
+For each flow $i$ (loop over \texttt{len(X)}):
+\begin{enumerate}
+    \item Read \texttt{xgb\_label = xgb\_preds[i]}
+    \item Read \texttt{k\_score = kitsune\_scores[i]}
+    \item Read \texttt{k\_thresh = self.kitsune.threshold}
+    \item Apply priority-based logic: XGBoost says DoS $\to$ ``DoS/DDoS''; Kitsune says anomaly $\to$ ``Anomaly''; otherwise $\to$ ``Benign''
+\end{enumerate}
+
+\subsection{Step 4: Heuristic Override Application}
+
+For each flow where verdict $\neq$ ``Benign'':
+\begin{enumerate}
+    \item Check if \texttt{input\_df} is available.
+    \item Call \texttt{\_is\_safe\_broadcast(input\_df.iloc[i])}.
+    \item If safe broadcast: override to ``Benign (Safe Broadcast)''.
+\end{enumerate}
+
+\subsection{Step 5: Result Compilation}
+
+Assemble the results dictionary containing \texttt{xgb\_preds}, \texttt{xgb\_probs}, \texttt{kitsune\_scores}, \texttt{final\_preds}, and \texttt{reasons}. Return to the orchestrator (\texttt{run.py}) for reporting.
+
+
+\section{Features of the Hybrid Engine}
+
+\subsection{Hierarchical Decision Making (4 Priority Levels)}
+
+\begin{enumerate}
+    \item \textbf{Level 1:} XGBoost Detection (highest priority for known attacks)
+    \item \textbf{Level 2:} Kitsune Anomaly Detection (for unknown patterns)
+    \item \textbf{Level 3:} Heuristic Override (to correct known false positive cases)
+    \item \textbf{Level 4:} Default Benign (lowest priority --- clean traffic)
+\end{enumerate}
+
+\subsection{Safe Broadcast Detection}
+
+The \texttt{\_is\_safe\_broadcast()} method prevents common false positives by overriding the verdict when traffic is low-volume ($\leq$10 packets) and destined to a broadcast (\texttt{.255}) or multicast (\texttt{224.x} / \texttt{239.x} / \texttt{255.255.255.255}) IP address. Typical false positive scenarios include NetBIOS name resolution, SSDP discovery, mDNS queries, and DHCP requests on broadcast/multicast addresses.
+
+\subsection{Confidence Scoring}
+
+Each verdict comes with associated confidence information:
+\begin{itemize}
+    \item \textbf{DoS/DDoS:} XGBoost probability (e.g., ``Confidence: 0.98'')
+    \item \textbf{Anomaly:} Kitsune RMSE vs threshold (e.g., ``RMSE: 2.15 > 0.89'')
+    \item \textbf{Benign:} Simply ``Clean'' or ``Clean (Safe Broadcast)''
+\end{itemize}
+
+\subsection{Detailed Reasoning Generation}
+
+Every flow receives a human-readable reason string: ``XGBoost Confidence: 0.97'', ``Kitsune RMSE: 3.42 > 0.89'', ``Clean'', or ``Clean (Safe Broadcast)''. These reasons are written to the prediction JSON files and the summary report, enabling security analysts to understand why each flow was classified.
+
+
+\section{Inter-Model Communication}
+
+\subsection{Input Interface}
+
+Both models receive the same input:
+\begin{itemize}
+    \item \textbf{Data type:} numpy array
+    \item \textbf{Shape:} \texttt{(n\_flows, 33)}
+    \item \textbf{Content:} The 33 selected features from \texttt{config.yaml}
+\end{itemize}
+
+The Hybrid Engine does not transform the data between models --- both operate on the identical feature matrix.
+
+\subsection{Output Interface}
+
+The Hybrid Engine returns a dictionary to \texttt{run.py}:
+
+\begin{verbatim}
+{
+  "xgb_preds":      [0, 1, 0, ...],
+  "xgb_probs":      [0.02, 0.98, ...],
+  "kitsune_scores": [0.01, 0.05, ...],
+  "final_preds":    ["Benign", "DoS/DDoS", ...],
+  "reasons":        ["Clean", "XGBoost Confidence: 0.98", ...]
+}
+\end{verbatim}
+
+\subsection{XGBoost $\leftrightarrow$ Hybrid $\leftrightarrow$ Kitsune Data Flow}
+
+\begin{verbatim}
+run.py
+  |
+  +--> HybridDetector.detect(X, input_df)
+         |
+         +--> XGBoostDetector.predict(X)
+         |      Returns: preds, probs
+         |
+         +--> KitNET.predict(X)
+         |      Returns: RMSE scores
+         |
+         +--> Decision Fusion Loop
+         |      For each flow: apply hierarchy + overrides
+         |
+         +--> Return results dict
+  |
+  +--> ReportGenerator (report + predictions)
+\end{verbatim}
+
+
+\section{Decision Flow Examples}
+
+\subsection{Known DDoS Attack}
+
+\noindent\textbf{Input:} DNS Amplification flow (high bytes/s, large bwd packets)\\
+\textbf{XGBoost:} pred=1, prob=0.99\\
+\textbf{Kitsune:} RMSE=4.2 ($\gg$ threshold)\\
+\textbf{Decision:} XGBoost says DoS $\to$ verdict = ``DoS/DDoS''\\
+\textbf{Reason:} ``XGBoost Confidence: 0.99''\\
+\textbf{Final:} DoS/DDoS
+
+\subsection{Zero-Day Attack}
+
+\noindent\textbf{Input:} Novel slow-rate attack (never seen in training data)\\
+\textbf{XGBoost:} pred=0, prob=0.15 (doesn't recognize this pattern)\\
+\textbf{Kitsune:} RMSE=2.8 ($>$ threshold of 0.89)\\
+\textbf{Decision:} XGBoost says benign, but Kitsune says anomaly $\to$ verdict = ``Anomaly''\\
+\textbf{Reason:} ``Kitsune RMSE: 2.80 > 0.89''\\
+\textbf{Final:} Anomaly
+
+\subsection{Safe Broadcast}
+
+\noindent\textbf{Input:} NetBIOS broadcast (dst\_ip=192.168.1.255, port=137, 3 packets)\\
+\textbf{XGBoost:} pred=0, prob=0.32\\
+\textbf{Kitsune:} RMSE=1.5 ($>$ threshold of 0.89)\\
+\textbf{Decision:} Kitsune says anomaly $\to$ initial verdict = ``Anomaly''\\
+\textbf{Broadcast check:} dst\_ip ends with .255, total\_fwd\_packets=3 ($\leq$10) $\to$ Override to ``Benign''\\
+\textbf{Reason:} ``Clean (Safe Broadcast)''\\
+\textbf{Final:} Benign
+
+\subsection{Normal Traffic}
+
+\noindent\textbf{Input:} Standard web browsing flow\\
+\textbf{XGBoost:} pred=0, prob=0.03\\
+\textbf{Kitsune:} RMSE=0.02 (well below threshold)\\
+\textbf{Decision:} Both models agree --- benign\\
+\textbf{Reason:} ``Clean''\\
+\textbf{Final:} Benign
+
+
+\section{Performance Impact \& Accuracy Improvement}
+
+Running both models adds minimal overhead:
+\begin{itemize}
+    \item XGBoost inference: $\sim$0.1ms per flow
+    \item Kitsune inference: $\sim$0.5ms per flow
+    \item Hybrid logic: $\sim$0.01ms per flow
+    \item \textbf{Total:} $\sim$0.6ms per flow
+\end{itemize}
+
+\noindent Accuracy improvement from hybrid approach:
+\begin{itemize}
+    \item Known attack detection: $\geq$ 95\% (XGBoost alone)
+    \item Zero-day detection: Adds Kitsune coverage for novel attacks
+    \item False positive reduction: Broadcast override eliminates $\sim$2--3\% false positives on typical enterprise networks.
+\end{itemize}
+
+
+\section{Configuration \& Tuning (Operational Modes)}
+
+The Hybrid Engine behavior can be tuned through \texttt{config.yaml}:
+
+\begin{itemize}
+    \item \textbf{\texttt{thresholds.malicious\_file\_ratio}} (0.30): Percentage of malicious/anomalous flows needed to flag a file as Malicious. Used in the report generation stage.
+    \item \textbf{\texttt{kitsune.threshold\_std\_factor}} (3.0): Controls Kitsune's anomaly sensitivity. Directly affects how many flows are flagged as ``Anomaly'' by the hybrid logic.
+    \item \textbf{Adding safe ports to \texttt{\_is\_safe\_broadcast()}:} Additional service ports can be added to the \texttt{safe\_ports} set to reduce false positives for known network services.
+\end{itemize}
+
+
+\section{Advantages of the Hybrid Approach}
+
+\begin{enumerate}
+    \item \textbf{Defense in Depth} --- Two independent detection methods provide redundancy. If one model fails, the other provides coverage.
+    \item \textbf{Known + Unknown Coverage} --- XGBoost handles the 10 known attack types with high precision. Kitsune catches everything else.
+    \item \textbf{Explainable Decisions} --- Every verdict includes a reason string that explains which model triggered the detection and why.
+    \item \textbf{Low Overhead} --- The hybrid logic adds negligible processing time compared to the model inference itself.
+    \item \textbf{Configurable Sensitivity} --- Both the classification threshold (0.5) and anomaly threshold ($\mu + k\sigma$) can be tuned independently.
+    \item \textbf{False Positive Mitigation} --- Heuristic overrides prevent common network services from being misclassified.
+\end{enumerate}
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%              PART V — ANALYSIS & RESEARCH
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Analysis \& Research}
+
+% ============================================================
+\chapter{Benign Classification Analysis}
+% ============================================================
+
+\section{Why \texttt{Polished\_benign.csv} is Classified as Benign}
+
+\subsection{Feature Profile Analysis}
+% Content placeholder
+
+\subsection{Implicit Labeling \& Ground Truth}
+% Content placeholder
+
+\section{Possibilities for Benign Classification}
+
+\subsection{Scenario A: Unanimous Benign}
+% Content placeholder
+
+\subsection{Scenario B: Safe Broadcast Override}
+% Content placeholder
+
+\subsection{Scenario C: Weak / Borderline Anomaly}
+% Content placeholder
+
+\section{Kitsune's Relationship with Benign Data}
+% Content placeholder
+
+\section{XGBoost Says Benign, Kitsune Says Anomaly — Scenarios}
+
+\subsection{Zero-Day Attack (Unknown Pattern)}
+% Content placeholder
+
+\subsection{Low-Rate Denial of Service (LDoS)}
+% Content placeholder
+
+\subsection{Data Exfiltration / DNS Tunneling}
+% Content placeholder
+
+\subsection{Flash Crowd / High Load (False Positive)}
+% Content placeholder
+
+\subsection{Misconfigured Application}
+% Content placeholder
+
+
+% ============================================================
+\chapter{Kitsune Anomaly Detection — Deep Analysis}
+% ============================================================
+
+\section{Step-by-Step Detection Process}
+% Content placeholder
+
+\section{Mathematical Algorithm (RMSE \& Threshold)}
+% Content placeholder
+
+\section{Feature Analysis (by Category)}
+
+\subsection{Packet Counts (Volume)}
+% Content placeholder
+
+\subsection{Packet Lengths (Size Dynamics)}
+% Content placeholder
+
+\subsection{Inter-Arrival Times (Timing)}
+% Content placeholder
+
+\subsection{TCP Flags (Behavior)}
+% Content placeholder
+
+\section{Significance of Each Feature Group in Detection}
+% Content placeholder
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%       PART VI — REPORTING, OUTPUT & OPERATIONS
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Reporting, Output \& Operations}
+
+% ============================================================
+\chapter{Reporting \& Output Generation}
+% ============================================================
+
+\section{Output Directory Structure}
+% Content placeholder
+
+\section{Report Components}
+
+\subsection{Executive Summary}
+% Content placeholder
+
+\subsection{Detection Breakdown}
+% Content placeholder
+
+\subsection{Investigation Details}
+% Content placeholder
+
+\subsection{Accuracy Analysis (Confusion Matrix)}
+% Content placeholder
+
+\subsection{Model Information}
+% Content placeholder
+
+\section{JSON Prediction Outputs}
+
+\subsection{\texttt{benign\_flows.json}}
+% Content placeholder
+
+\subsection{\texttt{dos\_flows.json}}
+% Content placeholder
+
+\subsection{\texttt{anomaly\_flows.json}}
+% Content placeholder
+
+\section{Markdown Summary Report (\texttt{Report.md})}
+% Content placeholder
+
+\section{Technical Debug Log}
+% Content placeholder
+
+
+% ============================================================
+\chapter{Classification Categories \& Verdicts}
+% ============================================================
+
+\section{Flow-Level Classifications}
+
+\subsection{Benign}
+% Content placeholder
+
+\subsection{DoS/DDoS}
+% Content placeholder
+
+\subsection{Anomaly}
+% Content placeholder
+
+\section{File-Level Verdicts}
+
+\subsection{SAFE}
+% Content placeholder
+
+\subsection{SUSPICIOUS}
+% Content placeholder
+
+\subsection{MALICIOUS}
+% Content placeholder
+
+\section{Confidence Metrics \& Interpretation}
+% Content placeholder
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%            PART VII — USER DOCUMENTATION
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{User Documentation}
+
+% ============================================================
+\chapter{User Manual}
+% ============================================================
+
+\section{System Requirements \& Prerequisites}
+% Content placeholder
+
+\section{Installation \& Setup}
+
+\subsection{Quick Start (\texttt{run.bat})}
+% Content placeholder
+
+\subsection{Manual Installation}
+% Content placeholder
+
+\section{Command-Line Usage}
+
+\subsection{Interactive Mode}
+% Content placeholder
+
+\subsection{Direct Command Mode}
+% Content placeholder
+
+\subsection{Training Commands}
+% Content placeholder
+
+\subsection{Detection Commands}
+% Content placeholder
+
+\section{File Location Specifications}
+
+\subsection{Relative Paths}
+% Content placeholder
+
+\subsection{Absolute Paths}
+% Content placeholder
+
+\subsection{Path Handling Rules}
+% Content placeholder
+
+\section{Supported File Formats}
+% Content placeholder
+
+\section{Configuration Options (\texttt{config.yaml})}
+% Content placeholder
+
+\section{Understanding Results}
+% Content placeholder
+
+\section{Troubleshooting Guide}
+
+\subsection{Common Errors \& Fixes}
+% Content placeholder
+
+\subsection{GPU Detection Issues}
+% Content placeholder
+
+\subsection{Memory Issues}
+% Content placeholder
+
+\section{Advanced Usage}
+
+\subsection{Batch Processing}
+% Content placeholder
+
+\subsection{Custom Feature Selection}
+% Content placeholder
+
+\subsection{Model Retraining}
+% Content placeholder
+
+\section{Security Considerations}
+% Content placeholder
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%       PART VIII — SYSTEM UTILITIES & INFRASTRUCTURE
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{System Utilities \& Infrastructure}
+
+% ============================================================
+\chapter{System Utilities}
+% ============================================================
+
+\section{Logging System (\texttt{src/utils.py})}
+
+\subsection{Multi-Destination Logging}
+% Content placeholder
+
+\subsection{Hardware Detection (GPU/CPU)}
+% Content placeholder
+
+\section{Analysis Tools}
+
+\subsection{\texttt{analyze\_tier2.py}}
+% Content placeholder
+
+\subsection{\texttt{debug\_startup.py}}
+% Content placeholder
+
+\section{Windows Batch Launcher (\texttt{run.bat})}
+% Content placeholder
+
+\section{Dockerfile \& Containerization}
+% Content placeholder
+
+
+% ============================================================
+\chapter{Dataset Description}
+% ============================================================
+
+\section{Training Datasets}
+
+\subsection{PolishedBenign (Clean Traffic)}
+% Content placeholder
+
+\subsection{PolishedDos (10 Attack Type CSVs)}
+% Content placeholder
+
+\section{Testing / Evaluation Datasets}
+
+\subsection{Tier 1 — Pure Attack Mix (5 Files)}
+% Content placeholder
+
+\subsection{Tier 2 — Benign Heavy (4 Files)}
+% Content placeholder
+
+\subsection{Tier 3 — Mixed Ratio (5 Files)}
+% Content placeholder
+
+\section{PCAP Test Files}
+% Content placeholder
+
+\section{Dataset Characteristics \& Statistics}
+% Content placeholder
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%      PART IX — PERFORMANCE, TESTING & DEPLOYMENT
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Performance, Testing \& Deployment}
+
+% ============================================================
+\chapter{Performance Characteristics}
+% ============================================================
+
+\section{Memory Usage Analysis}
+% Content placeholder
+
+\section{Processing Speed Benchmarks}
+
+\subsection{CSV Processing}
+% Content placeholder
+
+\subsection{PCAP Processing}
+% Content placeholder
+
+\subsection{Model Inference (CPU vs GPU)}
+% Content placeholder
+
+\section{Scalability Limits}
+% Content placeholder
+
+
+% ============================================================
+\chapter{Testing \& Validation}
+% ============================================================
+
+\section{Unit Tests (\texttt{test\_feature\_extractor.py})}
+% Content placeholder
+
+\section{Integration Testing Strategy}
+% Content placeholder
+
+\section{Tier-Based Dataset Testing}
+% Content placeholder
+
+\section{Accuracy Metrics \& Evaluation}
+
+\subsection{Accuracy, Precision, Recall, F1-Score}
+% Content placeholder
+
+\subsection{ROC-AUC}
+% Content placeholder
+
+\subsection{False Positive / False Negative Rates}
+% Content placeholder
+
+\section{Confusion Matrix Analysis}
+% Content placeholder
+
+
+% ============================================================
+\chapter{Deployment \& Scalability}
+% ============================================================
+
+\section{Local Execution Setup}
+% Content placeholder
+
+\section{Docker Deployment}
+% Content placeholder
+
+\section{REST API Compatibility (FastAPI)}
+% Content placeholder
+
+\section{Batch \& Real-Time Processing}
+% Content placeholder
+
+\section{Security \& Reliability Considerations}
+% Content placeholder
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%          PART X — CONCLUSION & REFERENCES
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Conclusion \& References}
+
+% ============================================================
+\chapter{Conclusion}
+% ============================================================
+
+\section{Summary of Work}
+% Content placeholder
+
+\section{Key Achievements}
+% Content placeholder
+
+\section{Future Scope \& Enhancements}
+% Content placeholder
+
+
+% ============================================================
+\chapter{References}
+% ============================================================
+
+\section{Research Papers \& Journals}
+% Content placeholder
+
+\section{Books}
+% Content placeholder
+
+\section{Online Resources \& Documentation}
+% Content placeholder
+
+\section{Datasets \& Benchmarks}
+% Content placeholder
+
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                     APPENDICES
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+
+\chapter{Complete Feature List with Definitions}
+% Content placeholder
+
+\chapter{config.yaml — Full Configuration Reference}
+% Content placeholder
+
+\chapter{Sample Output Report (\texttt{Report.md})}
+% Content placeholder
+
+\chapter{Sample JSON Prediction Outputs}
+% Content placeholder
+
+\chapter{System Flow Diagrams (Full-Size)}
+% Content placeholder
+
+\chapter{Glossary of Terms}
+% Content placeholder
+
+\chapter{Abbreviations}
+% Content placeholder
+
+% ============================================================
+\end{document}

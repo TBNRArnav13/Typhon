@@ -1,0 +1,16 @@
+{
+  "platform": "Windows",
+  "architecture": "AMD64",
+  "python_version": "3.13.13",
+  "cpu_count": 32,
+  "ram_total_gb": 15.63,
+  "ram_available_gb": 3.49,
+  "ram_percent_used": 77.7,
+  "gpu_available": true,
+  "gpu_name": "NVIDIA GeForce RTX 4070 Laptop GPU",
+  "gpu_vram_gb": 8.0,
+  "gpu_vram_free_gb": 8.0,
+  "pytorch_device": "cuda",
+  "xgboost_device": "cuda",
+  "xgboost_tree_method": "hist"
+}

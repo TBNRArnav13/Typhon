@@ -1,0 +1,19 @@
+# ============================================================================
+% Test Models Configuration
+# ============================================================================
+
+data_loading:
+  max_rows_per_file: 100000
+
+models:
+  rf:
+    n_estimators: 100
+    max_depth: 12
+  svm:
+    kernel: "rbf"
+    C: 1.0
+  knn:
+    n_neighbors: 5
+  dnn:
+    hidden_layer_sizes: [64, 32, 16]
+    max_iter: 30

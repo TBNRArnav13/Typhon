@@ -1,0 +1,134 @@
+{
+  "fwd packet length min": {
+    "mean_decrease": 0.223281,
+    "std": 0.00022
+  },
+  "total backward packets": {
+    "mean_decrease": 0.168533,
+    "std": 0.000167
+  },
+  "flow bytes/s": {
+    "mean_decrease": 0.052712,
+    "std": 0.00014
+  },
+  "flow packets/s": {
+    "mean_decrease": 0.040279,
+    "std": 3.9e-05
+  },
+  "flow duration": {
+    "mean_decrease": 0.023591,
+    "std": 0.000176
+  },
+  "fwd packet length max": {
+    "mean_decrease": 0.016731,
+    "std": 3.1e-05
+  },
+  "flow iat min": {
+    "mean_decrease": 0.007355,
+    "std": 6.1e-05
+  },
+  "total fwd packets": {
+    "mean_decrease": 0.00574,
+    "std": 2.4e-05
+  },
+  "fwd iat mean": {
+    "mean_decrease": 0.003555,
+    "std": 6.3e-05
+  },
+  "fwd packet length mean": {
+    "mean_decrease": 0.002327,
+    "std": 4.1e-05
+  },
+  "total length of bwd packets": {
+    "mean_decrease": 0.001893,
+    "std": 4.7e-05
+  },
+  "total length of fwd packets": {
+    "mean_decrease": 0.000548,
+    "std": 9e-06
+  },
+  "fwd iat std": {
+    "mean_decrease": 0.000239,
+    "std": 5e-06
+  },
+  "fwd iat min": {
+    "mean_decrease": 0.000114,
+    "std": 1e-05
+  },
+  "flow iat mean": {
+    "mean_decrease": 5.6e-05,
+    "std": 3e-06
+  },
+  "fwd packet length std": {
+    "mean_decrease": 1e-05,
+    "std": 5e-06
+  },
+  "flow iat std": {
+    "mean_decrease": 6e-06,
+    "std": 2e-06
+  },
+  "flow iat max": {
+    "mean_decrease": 6e-06,
+    "std": 2e-06
+  },
+  "fwd iat total": {
+    "mean_decrease": 3e-06,
+    "std": 1e-06
+  },
+  "fwd iat max": {
+    "mean_decrease": 3e-06,
+    "std": 2e-06
+  },
+  "bwd iat total": {
+    "mean_decrease": 1e-06,
+    "std": 2e-06
+  },
+  "bwd iat mean": {
+    "mean_decrease": 1e-06,
+    "std": 1e-06
+  },
+  "fwd psh flags": {
+    "mean_decrease": 1e-06,
+    "std": 1e-06
+  },
+  "bwd packet length max": {
+    "mean_decrease": 0.0,
+    "std": 0.0
+  },
+  "bwd packet length min": {
+    "mean_decrease": 0.0,
+    "std": 0.0
+  },
+  "bwd packet length mean": {
+    "mean_decrease": 0.0,
+    "std": 0.0
+  },
+  "bwd packet length std": {
+    "mean_decrease": 0.0,
+    "std": 0.0
+  },
+  "bwd iat std": {
+    "mean_decrease": 0.0,
+    "std": 0.0
+  },
+  "bwd iat max": {
+    "mean_decrease": 0.0,
+    "std": 0.0
+  },
+  "bwd psh flags": {
+    "mean_decrease": 0.0,
+    "std": 0.0
+  },
+  "fwd urg flags": {
+    "mean_decrease": 0.0,
+    "std": 0.0
+  },
+  "bwd urg flags": {
+    "mean_decrease": 0.0,
+    "std": 0.0
+  },
+  "bwd iat min": {
+    "mean_decrease": -1e-06,
+    "std": 1e-06
+  }
+}

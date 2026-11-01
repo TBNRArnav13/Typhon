@@ -1,0 +1,165 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.6.1 Safari/537.36" version="29.5.2">
+  <diagram id="typhon-pipeline-sequential-architecture" name="Typhon Detailed Sequential Data Flow">
+    <mxGraphModel dx="3991" dy="1677" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1800" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=1;fontSize=24;fontStyle=1;align=center;verticalAlign=middle;fillColor=none;strokeColor=none;fontColor=#0F172A;" value="Typhon Detailed Pipeline: Asynchronous Data Flow &amp; Decision Tree" vertex="1">
+          <mxGeometry height="40" width="800" x="400" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="input" parent="1" style="shape=cylinder;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;shadow=1;strokeWidth=2;fillColor=#F8FAFC;strokeColor=#475569;fontColor=#0F172A;align=center;" value="Input Data File&#xa;(Raw PCAP / CSV Network Flows)" vertex="1">
+          <mxGeometry height="70" width="180" x="710" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="handler" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=12;shadow=1;strokeWidth=2;fillColor=#F1F5F9;strokeColor=#64748B;fontColor=#0F172A;align=center;" value="Input Handler&#xa;(Pcap Feature Extractor / CSV Loader)" vertex="1">
+          <mxGeometry height="60" width="240" x="680" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="scaler" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=12;shadow=1;strokeWidth=2;fillColor=#F1F5F9;strokeColor=#64748B;fontColor=#0F172A;align=center;" value="RobustScaler&#xa;(Feature Scaling &amp; Outlier Clamping)" vertex="1">
+          <mxGeometry height="60" width="240" x="680" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="drift" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FEF3C7;strokeColor=#D97706;fontColor=#78350F;align=center;" value="Concept Drift Detector&#xa;(Jensen-Shannon Divergence over PMF)" vertex="1">
+          <mxGeometry height="60" width="220" x="-120" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="xgb" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#EFF6FF;strokeColor=#2563EB;fontColor=#1E40AF;align=center;" value="Supervised XGBoost Detector&#xa;(CUDA accelerated signature lookup)" vertex="1">
+          <mxGeometry height="60" width="220" x="180" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="dgnn" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FAF5FF;strokeColor=#7C3AED;fontColor=#5B21B6;align=center;" value="Continuous-Time Dynamic Graph NN&#xa;(Asynchronous topological tracking)" vertex="1">
+          <mxGeometry height="60" width="220" x="740" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="dgnn_ip" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FAF5FF;strokeColor=#7C3AED;fontColor=#5B21B6;align=center;" value="Dynamic IP Mapping&#xa;(Index registration)" vertex="1">
+          <mxGeometry height="50" width="220" x="740" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="dgnn_ltc" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FAF5FF;strokeColor=#7C3AED;fontColor=#5B21B6;align=center;" value="Liquid Time-Constant ODE Cell&#xa;(dh/dt = -h/tau + f(h, x) on dt gap)" vertex="1">
+          <mxGeometry height="50" width="220" x="740" y="570" as="geometry" />
+        </mxCell>
+        <mxCell id="dgnn_proj" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FAF5FF;strokeColor=#7C3AED;fontColor=#5B21B6;align=center;" value="Edge Projector (MLP)&#xa;(Fuses Node Context + Flow Features)" vertex="1">
+          <mxGeometry height="50" width="220" x="740" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="qst3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FDF2F8;strokeColor=#DB2777;fontColor=#9D174D;align=center;" value="Quantum-Inspired Spatio-Temporal&#xa;Tensor-Transformer (QST3)" vertex="1">
+          <mxGeometry height="60" width="220" x="1170" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="qst3_kan" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FDF2F8;strokeColor=#DB2777;fontColor=#9D174D;align=center;" value="KAN Spatial Layer&#xa;(B-spline Cox-de Boor mapping)" vertex="1">
+          <mxGeometry height="50" width="220" x="1170" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="qst3_trans" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FDF2F8;strokeColor=#DB2777;fontColor=#9D174D;align=center;" value="LTC-Transformer Encoder&#xa;(Dilational TCN + Multi-Head Attn)" vertex="1">
+          <mxGeometry height="50" width="220" x="1170" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="qst3_mps" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FDF2F8;strokeColor=#DB2777;fontColor=#9D174D;align=center;" value="MPS Tensor Network Contraction&#xa;(Frobenius-renormalized state contraction)" vertex="1">
+          <mxGeometry height="50" width="220" x="1170" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="qst3_recon" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FDF2F8;strokeColor=#DB2777;fontColor=#9D174D;align=center;" value="Decoder Reconstruction&#xa;(Target Flow Output -&gt; Anomaly Score)" vertex="1">
+          <mxGeometry height="50" width="220" x="1170" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="qst3_evt" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#FDF2F8;strokeColor=#DB2777;fontColor=#9D174D;align=center;" value="EVT Threshold Engine&#xa;(Pareto GPD threshold fit)" vertex="1">
+          <mxGeometry height="50" width="220" x="1170" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="state_vec" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=12;fontStyle=1;shadow=1;strokeWidth=2.5;fillColor=#ECFDF5;strokeColor=#10B981;fontColor=#065F46;align=center;" value="State Constructor (S Vector)&#xa;[p_xgb, e_qst3, H_entropy, V_flow, L_system, delta_drift]" vertex="1">
+          <mxGeometry height="65" width="260" x="670" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="rl_agent" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;arcSize=15;shadow=1;strokeWidth=3;fillColor=#F0FDF4;strokeColor=#16A34A;fontColor=#14532D;align=center;" value="DQN RL Fusion Agent&#xa;(State evaluation &amp; action routing policy)" vertex="1">
+          <mxGeometry height="65" width="240" x="680" y="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="actions" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;shadow=1;strokeWidth=2.5;fillColor=#DCFCE7;strokeColor=#15803D;fontColor=#14532D;align=center;spacingLeft=5;spacingRight=5;" value="Select Neuro-Symbolic Action Rule:&#xa;A0: Trust XGBoost | A1: Trust QST3&#xa;A2: OR Fusion | A3: AND Fusion" vertex="1">
+          <mxGeometry height="100" width="180" x="710" y="1100" as="geometry" />
+        </mxCell>
+        <mxCell id="c2e2" parent="1" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;shadow=1;strokeWidth=2.5;fillColor=#FEE2E2;strokeColor=#EF4444;fontColor=#7F1D1D;align=center;spacingLeft=5;spacingRight=5;" value="C2E2 Optimization Check&#xa;(Is XGBoost confidence &gt; 99.5% ?)" vertex="1">
+          <mxGeometry height="100" width="180" x="710" y="1230" as="geometry" />
+        </mxCell>
+        <mxCell id="overrides" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;arcSize=15;shadow=1;strokeWidth=2;fillColor=#E0F2FE;strokeColor=#0284C7;fontColor=#0C4A6E;align=center;" value="Symbolic Override Filters&#xa;(mDNS / Local multicast benign whitelist)" vertex="1">
+          <mxGeometry height="60" width="240" x="680" y="1360" as="geometry" />
+        </mxCell>
+        <mxCell id="outputs" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=13;fontStyle=1;arcSize=25;shadow=1;strokeWidth=3;fillColor=#F0FDF4;strokeColor=#15803D;fontColor=#14532D;align=center;" value="Prediction Output Categorization&#xa;[Benign | Suspicious | Critical Anomaly | Zero-Day | DoS/DDoS]" vertex="1">
+          <mxGeometry height="65" width="260" x="670" y="1450" as="geometry" />
+        </mxCell>
+        <mxCell id="reports" parent="1" style="shape=cylinder;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;shadow=1;strokeWidth=2;fillColor=#F8FAFC;strokeColor=#475569;fontColor=#0F172A;align=center;" value="Report Generator&#xa;(Generates HTML / Markdown / JSON logs)" vertex="1">
+          <mxGeometry height="70" width="200" x="700" y="1550" as="geometry" />
+        </mxCell>
+        <mxCell id="left_panel" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fontStyle=0;arcSize=6;shadow=0;strokeWidth=1.5;strokeColor=#2D7600;fillColor=#60a917;align=left;spacingLeft=15;spacingRight=15;verticalAlign=top;spacingTop=15;fontColor=#ffffff;" value="&lt;b&gt;STEP-BY-STEP SEQUENTIAL DATA FLOW&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Step 1: Data Ingestion &amp; Formatting&lt;/b&gt;&lt;br/&gt;• Network packet bytes (.pcap) or csv rows (.csv) are loaded.&lt;br/&gt;• Input Handler extracts 33 flow metrics (lengths, rates, etc.).&lt;br/&gt;• RobustScaler clamps features to standard scaling range.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Step 2: Multi-Dimensional Feature Processing&lt;/b&gt;&lt;br/&gt;• The scaled 33 features are processed simultaneously:&lt;br/&gt;  - &lt;i&gt;Concept Drift:&lt;/i&gt; JS Divergence measures profile shifts.&lt;br/&gt;  - &lt;i&gt;XGBoost:&lt;/i&gt; Checks signatures for known attacks.&lt;br/&gt;  - &lt;i&gt;CT-DGNN:&lt;/i&gt; Computes continuous-time host graph updates.&lt;br/&gt;  - &lt;i&gt;QST3:&lt;/i&gt; Feeds data sequence windows through KAN, LTC-Transformers, and MPS to reconstruct values.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;Step 3: RL Decision Fusion &amp; Guardrails&lt;/b&gt;&lt;br/&gt;• Outputs from all detectors form a 6-Dimensional State Vector S.&lt;br/&gt;• DQN Fusion Agent reads S and chooses a fusion policy (A0 - A3).&lt;br/&gt;• &lt;i&gt;C2E2 Check:&lt;/i&gt; High-confidence attacks bypass fusion to save time.&lt;br/&gt;• &lt;i&gt;Symbolic Whitelisting:&lt;/i&gt; Clears safe local protocols (mDNS/multicast).&lt;br/&gt;• Predicts exact alert category and triggers log reports." vertex="1">
+          <mxGeometry height="650" width="530" x="-50" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="right_panel" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11.5;fontStyle=0;arcSize=6;shadow=0;strokeWidth=1.5;strokeColor=#2D7600;fillColor=#60a917;align=left;spacingLeft=15;spacingRight=15;verticalAlign=top;spacingTop=15;fontColor=#ffffff;" value="&lt;b&gt;POSSIBLE DECISION PATHS &amp; OUTPUT COMBINATIONS&lt;/b&gt;&lt;br/&gt;&lt;br/&gt;Here are all possible pipeline output outcomes in simple words:&lt;br/&gt;&lt;br/&gt;&lt;b&gt;1. Combo A: C2E2 Exit (Known Attack)&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;Condition:&lt;/i&gt; Supervised XGBoost is extremely confident (&amp;gt;99.5%).&lt;br/&gt;• &lt;i&gt;Output:&lt;/i&gt; &lt;b&gt;&#39;DoS/DDoS&#39; (Known Signature)&lt;/b&gt;. Full fusion is bypassed.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;2. Combo B: Trusted Signature Match (Action 0)&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;Condition:&lt;/i&gt; DQN chooses Action 0. XGBoost finds signature match.&lt;br/&gt;• &lt;i&gt;Output:&lt;/i&gt; &lt;b&gt;&#39;DoS/DDoS&#39; (Known Signature)&lt;/b&gt;.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;3. Combo C: Zero-Day / Critical Outlier (Action 1)&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;Condition:&lt;/i&gt; DQN chooses Action 1. QST3 reconstruction error is higher than mathematical threshold, but XGBoost sees no signature match.&lt;br/&gt;• &lt;i&gt;Output:&lt;/i&gt; &lt;b&gt;&#39;Zero-Day Outlier&#39;&lt;/b&gt; (New, unrecognized anomaly).&lt;br/&gt;&lt;br/&gt;&lt;b&gt;4. Combo D: High-Sensitivity Warnings (Action 2)&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;Condition:&lt;/i&gt; DQN chooses Action 2 (OR Union) during drift alerts. Either model flags.&lt;br/&gt;• &lt;i&gt;Output:&lt;/i&gt; &lt;b&gt;&#39;Suspicious&#39;&lt;/b&gt; or &lt;b&gt;&#39;Critical Anomaly&#39;&lt;/b&gt; (Aggressive warn).&lt;br/&gt;&lt;br/&gt;&lt;b&gt;5. Combo E: Noisy/Normal Operations (Action 3)&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;Condition:&lt;/i&gt; DQN chooses Action 3 (AND Intersection). Only one model flags.&lt;br/&gt;• &lt;i&gt;Output:&lt;/i&gt; &lt;b&gt;&#39;Benign&#39; (Safe flow)&lt;/b&gt;. Avoids false alarms during noisy spikes.&lt;br/&gt;&lt;br/&gt;&lt;b&gt;6. Combo F: Whitelist Override&lt;/b&gt;&lt;br/&gt;• &lt;i&gt;Condition:&lt;/i&gt; Output is flagged as alert, but ports match local discovery (5353, 224.*).&lt;br/&gt;• &lt;i&gt;Output:&lt;/i&gt; Overridden back to &lt;b&gt;&#39;Benign&#39; (Safe local discovery)&lt;/b&gt;." vertex="1">
+          <mxGeometry height="650" width="530" x="1040" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="input" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="handler" value="Raw Bytes / Records">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="handler" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="scaler" value="33 Tabular Columns">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_drift" edge="1" parent="1" source="scaler" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="drift" value="Selected features">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_xgb" edge="1" parent="1" source="scaler" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="xgb" value="Scaled 33D row">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dgnn" edge="1" parent="1" source="scaler" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="dgnn" value="Source/Dest IPs, timestamps">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dg1" edge="1" parent="1" source="dgnn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="dgnn_ip" value="Node indexes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dg2" edge="1" parent="1" source="dgnn_ip" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="dgnn_ltc" value="Node state h(t)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_dg3" edge="1" parent="1" source="dgnn_ltc" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="dgnn_proj" value="z_e graph edge vector">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_qst3" edge="1" parent="1" source="scaler" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="qst3" value="10-step sequence window">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_qs1" edge="1" parent="1" source="qst3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="qst3_kan" value="Spatial splines">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_qs2" edge="1" parent="1" source="qst3_kan" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="qst3_trans" value="Attention output">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_qs3" edge="1" parent="1" source="qst3_trans" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="qst3_mps" value="Compressed state">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_qs4" edge="1" parent="1" source="qst3_mps" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="qst3_recon" value="Reconstruction error">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_qs5" edge="1" parent="1" source="qst3_recon" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="qst3_evt" value="Zero-Day flag (e_qst3)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fs1" edge="1" parent="1" source="drift" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="state_vec" value="delta_drift score">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fs2" edge="1" parent="1" source="xgb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="state_vec" value="p_xgb probability">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fs3" edge="1" parent="1" source="dgnn_proj" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="state_vec" value="z_e graph features">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_fs4" edge="1" parent="1" source="qst3_evt" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="state_vec" value="e_qst3 flags">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rl1" edge="1" parent="1" source="state_vec" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="rl_agent" value="State Vector S">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_rl2" edge="1" parent="1" source="rl_agent" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="actions" value="Action Index (0,1,2,3)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_gd1" edge="1" parent="1" source="actions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="c2e2" value="Fused prediction">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_gd2" edge="1" parent="1" source="c2e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="overrides" value="Pre-override decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_out1" edge="1" parent="1" source="overrides" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="outputs" value="Sanitized decisions">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_out2" edge="1" parent="1" source="outputs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=2;strokeColor=#475569;fillColor=none;fontSize=10;fontColor=#334155;align=center;labelBackgroundColor=#F8FAFC;" target="reports" value="Outputs Matrix">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_c2e2_bypass" edge="1" parent="1" source="xgb" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;strokeWidth=1.5;strokeColor=#E11D48;dashed=1;fillColor=none;fontSize=10;fontColor=#9F1239;align=center;labelBackgroundColor=#FFF1F2;" target="c2e2" value="Confidence Bypass (&gt;99.5%)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="660" y="720" />
+              <mxPoint x="660" y="1280" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

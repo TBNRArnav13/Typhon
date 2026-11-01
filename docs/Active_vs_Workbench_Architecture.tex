@@ -1,0 +1,245 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{enumitem}
+
+\definecolor{primary}{RGB}{0, 76, 153}
+\definecolor{accent}{RGB}{204, 0, 0}
+\definecolor{lightgray}{RGB}{240, 240, 240}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    filecolor=magenta,      
+    urlcolor=blue,
+}
+
+\title{\textbf{Chimera IDS v4.0 Architecture:}\\ \Large Deep Integration vs. Modular Workbench Framework}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document provides a comprehensive technical breakdown of the 30 novel paradigms introduced in the Chimera Hybrid Intrusion Detection System. It explicitly delineates the 14 features strictly integrated (``bolted-in'') into the active neural computation graphs and forward-pass inference pipelines, contrasting them with the 16 auxiliary ``plug-and-play'' workbench modules available for modular research. A complete topological flow diagram is provided.
+\end{abstract}
+
+\vspace{0.5cm}
+
+\section{Part 1: The ``Bolted-In'' Features (Active Pipeline)}
+These 14 features are actively wired into the \texttt{train\_v4} and \texttt{detect} execution pipelines. Every network packet processed by the Chimera v4.0 engine flows sequentially through these mathematical mechanisms.
+
+\subsection{1. B-DAP Engine (Benign-Data Alignment Processor)}
+\textit{The unsupervised spatial model. It processes individual packets geometrically to identify isolated payload and volume anomalies.}
+
+\begin{description}[style=unboxed, leftmargin=0cm]
+    \item[\textcolor{primary}{1. AttentionGate (v2)}] \hfill \\
+    \textbf{Where it is used:} Input layer of \texttt{models/bdap.py}. \\
+    \textbf{How it is used:} A learnable dense layer applies a softmax weight vector to the 33 numerical features before compression. \\
+    \textbf{Why it is used:} Forces the network to dynamically focus on the specific feature (e.g., timing vs. packet size) that exhibits anomalous variance for a given packet.
+
+    \item[\textcolor{primary}{2. Variational Autoencoder (VAE) Bottleneck (v3)}] \hfill \\
+    \textbf{Where it is used:} Middle latent layer of \texttt{models/bdap.py}. \\
+    \textbf{How it is used:} Compresses data into a probabilistic distribution (mean $\mu$ and log-variance $\sigma^2$) using the reparameterization trick, optimizing via a combined MSE + Kullback-Leibler (KL) divergence loss. \\
+    \textbf{Why it is used:} Smooths the latent space, ensuring the model is highly robust against slightly mutated, out-of-distribution zero-day attacks.
+
+    \item[\textcolor{primary}{3. Kolmogorov-Arnold Networks (KAN) (v4)}] \hfill \\
+    \textbf{Where it is used:} Parallel encoder branch inside each B-DAP Sub-Autoencoder. \\
+    \textbf{How it is used:} Replaces static node-based activations (ReLU) with edge-based, learnable B-spline functions. The output is fused with the VAE branch using a dynamically learned gate weight. \\
+    \textbf{Why it is used:} Splines capture highly non-linear, multi-dimensional feature relationships that standard dense neural networks fundamentally fail to map.
+
+    \item[\textcolor{primary}{4. Manifold Mixup (v3)}] \hfill \\
+    \textbf{Where it is used:} \texttt{models/bdap.py} (During training only). \\
+    \textbf{How it is used:} Interpolates the hidden states of two random benign packets using a Beta distribution ($\lambda \sim \text{Beta}(\alpha, \alpha)$). \\
+    \textbf{Why it is used:} Eliminates ``blind spots'' in the decision boundary, preventing adversaries from exploiting gaps in the model's geometric understanding of normal traffic.
+
+    \item[\textcolor{primary}{5. Differential Privacy (DP) Noise (v3/v4)}] \hfill \\
+    \textbf{Where it is used:} \texttt{models/bdap.py} (During training only). \\
+    \textbf{How it is used:} Injects mathematically calibrated Laplacian noise (budget $\epsilon = 1.0$) into the input feature vectors. \\
+    \textbf{Why it is used:} Ensures compliance with federated learning standards; prevents an attacker from reverse-engineering individual traffic payloads from the extracted model weights.
+
+    \item[\textcolor{primary}{6. Extreme Value Theory (EVT) Thresholding (v3)}] \hfill \\
+    \textbf{Where it is used:} Output decision logic of \texttt{models/bdap.py}. \\
+    \textbf{How it is used:} Fits a Generalized Pareto Distribution (GPD) specifically to the extreme tails of the reconstruction error distribution. \\
+    \textbf{Why it is used:} Replaces rigid Gaussian standard deviations with a dynamic threshold built specifically for the chaotic, heavy-tailed nature of real-world network traffic.
+\end{description}
+
+\subsection{2. T-RAD Engine (Temporal Reconstruction Anomaly Detector)}
+\textit{The unsupervised temporal model. It processes sequences of packets over a sliding window to identify low-and-slow behavioral anomalies.}
+
+\begin{description}[style=unboxed, leftmargin=0cm]
+    \item[\textcolor{primary}{7. Multi-Scale Temporal Convolution (TCN) (v3)}] \hfill \\
+    \textbf{Where it is used:} Input stack of \texttt{models/transformer\_ad.py}. \\
+    \textbf{How it is used:} Executes 4 parallel dilated causal convolutions (dilation rates of 1, 2, 4, 8) over the packet sequence. \\
+    \textbf{Why it is used:} Allows the model to simultaneously analyze micro-millisecond packet bursts and macro-minute session trends without losing receptive field depth.
+
+    \item[\textcolor{primary}{8. Liquid Time-Constant (LTC) Networks (v4)}] \hfill \\
+    \textbf{Where it is used:} Middle layer of \texttt{models/transformer\_ad.py}. \\
+    \textbf{How it is used:} Passes the TCN output through an Ordinary Differential Equation (ODE) where the internal neural time-constant ($\tau$) is dynamically modulated by the input. \\
+    \textbf{Why it is used:} Standard networks assume packets arrive uniformly. LTC networks adapt their mathematical ``clock speed'' to the irregular, chaotic timing gaps of actual network traffic.
+
+    \item[\textcolor{primary}{9. Rotary Position Embedding (RoPE) (v3)}] \hfill \\
+    \textbf{Where it is used:} Pre-Transformer layer in \texttt{models/transformer\_ad.py}. \\
+    \textbf{How it is used:} Encodes position using complex rotation matrices applied to adjacent feature pairs. \\
+    \textbf{Why it is used:} Grants the Transformer module the ability to process infinitely long streams of packets without losing track of sequence order, eliminating absolute position limits.
+\end{description}
+
+\subsection{3. System Fusion \& Automation Engine}
+\textit{The overarching logic that controls execution, voting, and report generation.}
+
+\begin{description}[style=unboxed, leftmargin=0cm]
+    \item[\textcolor{primary}{10. Quantum Tensor Networks (QTN) (v4)}] \hfill \\
+    \textbf{Where it is used:} Parallel 4th voter inside \texttt{models/hybrid.py}. \\
+    \textbf{How it is used:} Contracts the 33 features sequentially through a Matrix Product State (MPS) quantum tensor chain. \\
+    \textbf{Why it is used:} Captures ultra-high-order correlations (e.g., how feature 1, 14, and 33 interact simultaneously) with polynomial computational cost.
+
+    \item[\textcolor{primary}{11. RAG-GAN (Retrieval-Augmented Generation) (v4)}] \hfill \\
+    \textbf{Where it is used:} Phase 5 of the \texttt{train\_v4} pipeline in \texttt{run.py}. \\
+    \textbf{How it is used:} Identifies low-confidence boundary samples, retrieves similar historical attacks from a vector space, generates 5,000 synthetic adversarial mutations, and retrains XGBoost. \\
+    \textbf{Why it is used:} Proactively hardens the supervised model against zero-day evasion tactics before deployment.
+
+    \item[\textcolor{primary}{12. Confidence-Calibrated Early Exit (C2E2) (v4)}] \hfill \\
+    \textbf{Where it is used:} Routing logic in \texttt{models/hybrid.py}. \\
+    \textbf{How it is used:} If the lightweight XGBoost model outputs an attack probability $> 99.5\%$, the inference loop immediately returns a positive verdict, bypassing B-DAP and T-RAD. \\
+    \textbf{Why it is used:} Saves $\sim$40\% in computational latency, allowing the system to maintain multi-gigabit line-rate speeds on blatant attacks.
+
+    \item[\textcolor{primary}{13. Multi-Tiered Probabilistic Classification (v4)}] \hfill \\
+    \textbf{Where it is used:} Verdict consensus logic in \texttt{models/hybrid.py}. \\
+    \textbf{How it is used:} Outputs distinct threat tiers rather than binary flags: \textit{Critical Anomaly} (B-DAP + T-RAD consensus), \textit{Suspicious Temporal} (T-RAD only), \textit{Suspicious Spatial} (B-DAP only), and \textit{Malicious} (XGBoost). \\
+    \textbf{Why it is used:} Provides SOC analysts with granular threat triaging, separating massive volumetric floods from stealthy zero-day probes.
+
+    \item[\textcolor{primary}{14. MITRE ATT\&CK Mapper (v4)}] \hfill \\
+    \textbf{Where it is used:} Report generation in \texttt{src/reporting.py}. \\
+    \textbf{How it is used:} Uses a dictionary matrix to map internal heuristic triggers (e.g., ``DNS Amplification'') to standardized global identifiers (e.g., ``T1498.002''). \\
+    \textbf{Why it is used:} Enables seamless integration with enterprise threat intelligence (CTI) platforms.
+\end{description}
+
+\newpage
+\section{Part 2: The ``Plug-and-Play'' Workbench Modules}
+These 16 features are fully implemented, verified, and compiled within \texttt{models/chimera\_v3\_modules.py} and \texttt{chimera\_v4\_modules.py}. They are \textbf{not} currently active in the default \texttt{train\_v4} forward pass to preserve edge-deployment latency. They exist as modular, swap-ready puzzle pieces for advanced research experimentation.
+
+\subsection{Category A: Alternative Core Architectures}
+\textit{Designed to replace B-DAP or T-RAD for specialized deployment scenarios.}
+\begin{itemize}
+    \item \textbf{ST-GNN (Spatio-Temporal Graph Neural Network):} Treats IP addresses as nodes and packets as edges. \textit{Use case:} Detecting highly coordinated, multi-node botnet topologies.
+    \item \textbf{SNN (Spiking Neural Networks):} Converts numerical features into biological, time-based spike trains. \textit{Use case:} Deployment on ultra-low power neuromorphic hardware (e.g., Intel Loihi).
+    \item \textbf{HDC Encoder (Hyperdimensional Computing):} Projects data into 10,000-dimensional orthogonal binary vectors. \textit{Use case:} Running extremely fast anomaly detection on resource-constrained IoT gateways using simple bitwise operations.
+    \item \textbf{Feature Capsules (Capsule Networks):} Groups features into geometric voting capsules. \textit{Use case:} Enhancing interpretability by tracking the activation of specific feature subsets.
+\end{itemize}
+
+\subsection{Category B: Advanced Training \& Robustness}
+\textit{Designed to be injected into the training loop to harden model weights.}
+\begin{itemize}
+    \item \textbf{Flow-SimCLR (Contrastive Learning):} Applies self-supervised augmentations to raw traffic. \textit{Use case:} Pre-training the neural network on massive unlabelled PCAP repositories before fine-tuning.
+    \item \textbf{Defensive Distillation:} Trains a secondary model using the ``soft'' probability distributions of a larger teacher model. \textit{Use case:} Smoothing decision boundaries to mathematically resist adversarial ML evasion attacks.
+    \item \textbf{CTGAN Replay:} Standard tabular generative adversarial network. \textit{Use case:} Legacy synthetic generation module (largely superseded by the more efficient RAG-GAN).
+    \item \textbf{EWC (Elastic Weight Consolidation):} Applies a Fisher information matrix penalty to weight updates. \textit{Use case:} Continual lifelong learning, allowing the model to adapt to new network topologies without forgetting its original baseline.
+\end{itemize}
+
+\subsection{Category C: System Enhancements \& Analytics}
+\textit{Tools that sit outside the neural networks to provide metadata or routing.}
+\begin{itemize}
+    \item \textbf{Flow-SHAP (Shapley Additive Explanations):} Game-theory explainer module. \textit{Use case:} Visually mapping exactly which of the 33 features contributed most to a specific anomaly alert.
+    \item \textbf{Concept Drift Detector:} Monitors the Kullback-Leibler (KL) divergence of the latent space. \textit{Use case:} Running as a background cron job to alert administrators when the network baseline has fundamentally shifted, automatically triggering a retrain.
+    \item \textbf{Federated Enclave:} Simulates secure multi-party computation. \textit{Use case:} Training a shared, global intrusion detection model across 5 different enterprise networks without sharing raw PCAP data.
+    \item \textbf{RL-Fusion Agent:} Reinforcement learning-based decision router. \textit{Use case:} Dynamically penalizing or rewarding individual models over time, shifting trust based on the time of day or network load.
+    \item \textbf{Sinkhorn Attention:} Computes sparse attention matrices using optimal transport theory. \textit{Use case:} Expanding T-RAD's sequence context window from 100 packets to 10,000 packets without causing memory exhaustion.
+    \item \textbf{QAT (Quantization-Aware Training):} Simulates INT8 precision during training. \textit{Use case:} Compressing the final model weights for high-speed deployment on an FPGA or ASIC switch.
+    \item \textbf{Latent Space Boosting:} Feature engineering hook. \textit{Use case:} Extracting the unsupervised latent vectors from B-DAP and appending them as new columns to the supervised XGBoost dataset.
+    \item \textbf{Temporal Deltas:} Moving average calculator. \textit{Use case:} Feeding the rate-of-change (derivative) of packet volume directly into XGBoost.
+\end{itemize}
+
+\newpage
+\section{Part 3: Complete Architecture Flow Diagram}
+
+\begin{figure}[h]
+    \centering
+    \resizebox{\textwidth}{!}{
+    \begin{tikzpicture}[
+        node distance=1.5cm and 2cm,
+        box/.style={rectangle, draw=primary, thick, fill=white, text width=4.5cm, align=center, rounded corners, minimum height=1.2cm},
+        garage/.style={rectangle, draw=secondary, dashed, thick, fill=lightgray, text width=15cm, align=center, rounded corners, minimum height=1.5cm},
+        enginebox/.style={rectangle, draw=primary, very thick, fill=none, text width=16cm, align=center, rounded corners, inner sep=15pt},
+        arrow/.style={-{Stealth[scale=1.2]}, thick, primary},
+        txt/.style={text width=4cm, align=center, font=\small\sffamily}
+    ]
+    
+    % Garage
+    \node[garage] (garage) {
+        \textbf{THE GARAGE (Workbench Framework)}\\
+        \vspace{0.2cm}
+        \small{[ST-GNN] \quad [SNN] \quad [Flow-SimCLR] \quad [EWC] \quad [Federated Enclave] \quad [Flow-SHAP] \dots}\\
+        \textit{16 fully implemented modules available for custom research experiments.}
+    };
+    
+    % Main Input
+    \node[box, below=2cm of garage, text width=6cm] (input) {\textbf{RAW NETWORK TRAFFIC}\\ (33 Extracted Features)};
+    
+    % The Three Main Models
+    \node[box, below left=2cm and 1cm of input] (xgboost) {\textbf{XGBoost}\\(Supervised Trees)};
+    \node[box, below=2cm of input] (bdap) {\textbf{B-DAP}\\(Unsupervised Spatial)};
+    \node[box, below right=2cm and 1cm of input] (trad) {\textbf{T-RAD}\\(Unsupervised Temporal)};
+    
+    % Model Components
+    \node[txt, below=0.2cm of xgboost] (xgb_txt) {$\bullet$ Optuna Tuned\\$\bullet$ Known Attacks};
+    \node[txt, below=0.2cm of bdap] (bdap_txt) {$\bullet$ AttentionGate\\$\bullet$ VAE Bottleneck\\$\bullet$ KAN Autoencoders\\$\bullet$ DP Noise\\$\bullet$ Manifold Mixup\\$\bullet$ EVT Thresholding};
+    \node[txt, below=0.2cm of trad] (trad_txt) {$\bullet$ Multi-Scale TCN\\$\bullet$ LTC Dynamics (ODE)\\$\bullet$ RoPE Encoding};
+    
+    % QTN Node
+    \node[box, below=3cm of bdap, text width=3.5cm, minimum height=0.8cm] (qtn) {\textbf{QTN}\\(Tensor MPS)};
+    
+    % Hybrid Fusion
+    \node[box, below=2.5cm of qtn, text width=12cm, fill=lightgray!30] (fusion) {
+        \textbf{HYBRID FUSION ENGINE}\\
+        \vspace{0.2cm}
+        \begin{flushleft}
+        1. \textbf{C2E2 Early Exit} (Fast-path for XGBoost)\\
+        2. \textbf{Triple Consensus} (B-DAP + T-RAD + QTN)\\
+        3. \textbf{Multi-Tiered Verification:}\\
+        \quad $\rightarrow$ \textcolor{accent}{\textbf{Critical Anomaly}} (Highest confidence zero-day)\\
+        \quad $\rightarrow$ \textbf{Suspicious (Temporal / Spatial)}\\
+        \quad $\rightarrow$ \textbf{DoS / DDoS} (Known malicious signature)
+        \end{flushleft}
+    };
+    
+    % Output
+    \node[box, below=1.5cm of fusion, text width=5cm] (mitre) {\textbf{MITRE ATT\&CK Mapping}};
+    \node[box, below=1cm of mitre, text width=5cm] (report) {\textbf{Report Generation}};
+    
+    % Background box for Active Engine
+    \begin{scope}[on background layer]
+        \node[enginebox, fit=(input)(xgboost)(trad)(fusion)(bdap_txt)(trad_txt), label={[font=\Large\bfseries, text=primary]above:THE ACTIVE ENGINE (v4.0)}] (engine) {};
+    \end{scope}
+    
+    % Edges
+    \draw[arrow, dashed, secondary] (garage.south) -- node[right] {\textit{Only 14 modules bolted in}} (engine.north);
+    \draw[arrow] (input.south) -- (xgboost.north);
+    \draw[arrow] (input.south) -- (bdap.north);
+    \draw[arrow] (input.south) -- (trad.north);
+    
+    \draw[arrow] (bdap_txt.south) -- (qtn.north);
+    
+    \draw[arrow] (xgb_txt.south) |- ($(fusion.north) + (0, 0.5)$) -| (fusion.north);
+    \draw[arrow] (qtn.south) -- (fusion.north);
+    \draw[arrow] (trad_txt.south) |- ($(fusion.north) + (0, 0.5)$) -| (fusion.north);
+    
+    \draw[arrow] (fusion.south) -- (mitre.north);
+    \draw[arrow] (mitre.south) -- (report.north);
+    
+    \end{tikzpicture}
+    }
+    \caption{Topological diagram showing the separation between the auxiliary workbench modules and the actively executed v4.0 pipeline. The 14 bolted-in features govern the forward pass, culminating in the Multi-Tiered Hybrid Fusion engine.}
+\end{figure}
+
+\end{document}

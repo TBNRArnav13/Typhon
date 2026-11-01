@@ -1,0 +1,21 @@
+{
+  "hardware": "cuda:0",
+  "fast_path_latency_us": {
+    "mean": 256.2815500132274,
+    "p95": 483.12715002975887,
+    "p99": 740.3193500518694
+  },
+  "deep_path_breakdown_us": {
+    "xgb_gating": 256.2815500132274,
+    "st3_kan_mps": 745.1978000026429,
+    "ct_dgnn_ltc": 1309.7442999278428,
+    "dqn_routing": 12.95800000661984,
+    "total_deep_path": 2324.181649950333
+  },
+  "weighted_latency_us": 293.09017179210787,
+  "throughput_flows_per_sec": 3411.91925299123,
+  "memory_mb": {
+    "ram": 892.83984375,
+    "vram": 9.91650390625
+  }
+}

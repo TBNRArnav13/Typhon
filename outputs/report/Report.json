@@ -1,0 +1,59 @@
+{
+  "timestamp": "2026-07-21 20:43:14",
+  "input_file": "Dataset/Testing CIC/Home Test1.pcapng",
+  "verdict": "SUSPICIOUS",
+  "total_flows": 1939,
+  "metrics": {
+    "dos_count": 144,
+    "critical_anomaly_count": 0,
+    "suspicious_anomaly_count": 520,
+    "benign_count": 1275,
+    "total_threats": 664
+  },
+  "concept_drift": {
+    "drift_detected": false,
+    "js_divergence": 0.050590830965079256,
+    "severity": "NONE",
+    "js_scores_by_feature": {
+      "flow duration": 0.07231235868104617,
+      "total fwd packets": 0.0005291111214360421,
+      "total backward packets": 0.0005603078780973163,
+      "total length of fwd packets": 0.0007339210760008802,
+      "total length of bwd packets": 0.0005413405571490142,
+      "fwd packet length max": 0.011505944103867788,
+      "fwd packet length min": 0.06351513679365922,
+      "fwd packet length mean": 0.08833197724938971,
+      "fwd packet length std": 0.06385353729098277,
+      "bwd packet length max": 0.16664782882636253,
+      "bwd packet length min": 0.0925127738262371,
+      "bwd packet length mean": 0.16095200753881736,
+      "bwd packet length std": 0.10044097037795403,
+      "flow bytes/s": 0.0019405491153933537,
+      "flow packets/s": 0.017819507127866042,
+      "flow iat mean": 0.04205953050136672,
+      "flow iat std": 0.062073538078717044,
+      "flow iat max": 0.13185454298242258,
+      "flow iat min": 0.02349230498795045,
+      "fwd iat total": 0.07262282378021043,
+      "fwd iat mean": 0.048012714714491686,
+      "fwd iat std": 0.05808302907399987,
+      "fwd iat max": 0.1262039347401061,
+      "fwd iat min": 0.02605249617325077,
+      "bwd iat total": 0.058051464620515116,
+      "bwd iat mean": 0.023129150507160023,
+      "bwd iat std": 0.042563558201810146,
+      "bwd iat max": 0.10016749984748548,
+      "bwd iat min": 0.010223502186309134,
+      "fwd psh flags": 0.002710059887560768,
+      "bwd psh flags": 0.0,
+      "fwd urg flags": 0.0,
+      "bwd urg flags": 0.0
+    }
+  },
+  "models_loaded": {
+    "ct_dgnn": "Continuous-Time Dynamic Graph Neural Network",
+    "st3": "Spatio-Temporal Tensor-Transformer",
+    "xgb": "Supervised XGBoost Detector",
+    "rl_fusion": "Neuro-Symbolic Reinforcement Learning Fusion"
+  }
+}

@@ -1,0 +1,417 @@
+{
+  "XGBoost": {
+    "model_name": "XGBoost",
+    "timestamp": "2026-05-02T09:54:16.364021",
+    "total_samples": 500000,
+    "confusion_matrix": {
+      "TP": 149416,
+      "TN": 349630,
+      "FP": 608,
+      "FN": 346
+    },
+    "classification_metrics": {
+      "accuracy": 0.998092,
+      "precision": 0.995947,
+      "recall": 0.99769,
+      "f1_score": 0.996818,
+      "fpr": 0.001736,
+      "fnr": 0.00231,
+      "specificity": 0.998264,
+      "mcc": 0.995456
+    },
+    "per_attack_metrics": {
+      "BENIGN": {
+        "total_flows": 350238,
+        "detected": 0,
+        "missed": 0,
+        "detection_rate": 0,
+        "false_positives": 608
+      },
+      "DrDoS_DNS": {
+        "total_flows": 14918,
+        "detected": 14889,
+        "missed": 29,
+        "detection_rate": 0.998056,
+        "false_positives": 0
+      },
+      "DrDoS_LDAP": {
+        "total_flows": 14925,
+        "detected": 14922,
+        "missed": 3,
+        "detection_rate": 0.999799,
+        "false_positives": 0
+      },
+      "DrDoS_MSSQL": {
+        "total_flows": 14958,
+        "detected": 14958,
+        "missed": 0,
+        "detection_rate": 1.0,
+        "false_positives": 0
+      },
+      "DrDoS_NTP": {
+        "total_flows": 14693,
+        "detected": 14649,
+        "missed": 44,
+        "detection_rate": 0.997005,
+        "false_positives": 0
+      },
+      "DrDoS_NetBIOS": {
+        "total_flows": 14924,
+        "detected": 14921,
+        "missed": 3,
+        "detection_rate": 0.999799,
+        "false_positives": 0
+      },
+      "DrDoS_SNMP": {
+        "total_flows": 15189,
+        "detected": 15184,
+        "missed": 5,
+        "detection_rate": 0.999671,
+        "false_positives": 0
+      },
+      "DrDoS_SSDP": {
+        "total_flows": 14848,
+        "detected": 14845,
+        "missed": 3,
+        "detection_rate": 0.999798,
+        "false_positives": 0
+      },
+      "DrDoS_UDP": {
+        "total_flows": 15122,
+        "detected": 15115,
+        "missed": 7,
+        "detection_rate": 0.999537,
+        "false_positives": 0
+      },
+      "Syn": {
+        "total_flows": 15115,
+        "detected": 14942,
+        "missed": 173,
+        "detection_rate": 0.988554,
+        "false_positives": 0
+      },
+      "TFTP": {
+        "total_flows": 15070,
+        "detected": 14991,
+        "missed": 79,
+        "detection_rate": 0.994758,
+        "false_positives": 0
+      }
+    }
+  },
+  "B-DAP": {
+    "model_name": "B-DAP",
+    "timestamp": "2026-05-02T09:54:17.152976",
+    "total_samples": 500000,
+    "confusion_matrix": {
+      "TP": 80447,
+      "TN": 348927,
+      "FP": 1311,
+      "FN": 69315
+    },
+    "classification_metrics": {
+      "accuracy": 0.858748,
+      "precision": 0.983965,
+      "recall": 0.537166,
+      "f1_score": 0.694946,
+      "fpr": 0.003743,
+      "fnr": 0.462834,
+      "specificity": 0.996257,
+      "mcc": 0.660655
+    },
+    "per_attack_metrics": {
+      "BENIGN": {
+        "total_flows": 350238,
+        "detected": 0,
+        "missed": 0,
+        "detection_rate": 0,
+        "false_positives": 1311
+      },
+      "DrDoS_DNS": {
+        "total_flows": 14918,
+        "detected": 14326,
+        "missed": 592,
+        "detection_rate": 0.960316,
+        "false_positives": 0
+      },
+      "DrDoS_LDAP": {
+        "total_flows": 14925,
+        "detected": 14916,
+        "missed": 9,
+        "detection_rate": 0.999397,
+        "false_positives": 0
+      },
+      "DrDoS_MSSQL": {
+        "total_flows": 14958,
+        "detected": 13736,
+        "missed": 1222,
+        "detection_rate": 0.918305,
+        "false_positives": 0
+      },
+      "DrDoS_NTP": {
+        "total_flows": 14693,
+        "detected": 3217,
+        "missed": 11476,
+        "detection_rate": 0.218948,
+        "false_positives": 0
+      },
+      "DrDoS_NetBIOS": {
+        "total_flows": 14924,
+        "detected": 200,
+        "missed": 14724,
+        "detection_rate": 0.013401,
+        "false_positives": 0
+      },
+      "DrDoS_SNMP": {
+        "total_flows": 15189,
+        "detected": 14533,
+        "missed": 656,
+        "detection_rate": 0.956811,
+        "false_positives": 0
+      },
+      "DrDoS_SSDP": {
+        "total_flows": 14848,
+        "detected": 6652,
+        "missed": 8196,
+        "detection_rate": 0.448006,
+        "false_positives": 0
+      },
+      "DrDoS_UDP": {
+        "total_flows": 15122,
+        "detected": 6632,
+        "missed": 8490,
+        "detection_rate": 0.438566,
+        "false_positives": 0
+      },
+      "Syn": {
+        "total_flows": 15115,
+        "detected": 39,
+        "missed": 15076,
+        "detection_rate": 0.00258,
+        "false_positives": 0
+      },
+      "TFTP": {
+        "total_flows": 15070,
+        "detected": 6196,
+        "missed": 8874,
+        "detection_rate": 0.411148,
+        "false_positives": 0
+      }
+    }
+  },
+  "Chimera": {
+    "model_name": "Chimera",
+    "timestamp": "2026-05-02T09:56:30.650579",
+    "total_samples": 500000,
+    "confusion_matrix": {
+      "TP": 149417,
+      "TN": 348319,
+      "FP": 1919,
+      "FN": 345
+    },
+    "classification_metrics": {
+      "accuracy": 0.995472,
+      "precision": 0.98732,
+      "recall": 0.997696,
+      "f1_score": 0.992481,
+      "fpr": 0.005479,
+      "fnr": 0.002304,
+      "specificity": 0.994521,
+      "mcc": 0.989269
+    },
+    "per_attack_metrics": {
+      "BENIGN": {
+        "total_flows": 350238,
+        "detected": 0,
+        "missed": 0,
+        "detection_rate": 0,
+        "false_positives": 1919
+      },
+      "DrDoS_DNS": {
+        "total_flows": 14918,
+        "detected": 14890,
+        "missed": 28,
+        "detection_rate": 0.998123,
+        "false_positives": 0
+      },
+      "DrDoS_LDAP": {
+        "total_flows": 14925,
+        "detected": 14922,
+        "missed": 3,
+        "detection_rate": 0.999799,
+        "false_positives": 0
+      },
+      "DrDoS_MSSQL": {
+        "total_flows": 14958,
+        "detected": 14958,
+        "missed": 0,
+        "detection_rate": 1.0,
+        "false_positives": 0
+      },
+      "DrDoS_NTP": {
+        "total_flows": 14693,
+        "detected": 14649,
+        "missed": 44,
+        "detection_rate": 0.997005,
+        "false_positives": 0
+      },
+      "DrDoS_NetBIOS": {
+        "total_flows": 14924,
+        "detected": 14921,
+        "missed": 3,
+        "detection_rate": 0.999799,
+        "false_positives": 0
+      },
+      "DrDoS_SNMP": {
+        "total_flows": 15189,
+        "detected": 15184,
+        "missed": 5,
+        "detection_rate": 0.999671,
+        "false_positives": 0
+      },
+      "DrDoS_SSDP": {
+        "total_flows": 14848,
+        "detected": 14845,
+        "missed": 3,
+        "detection_rate": 0.999798,
+        "false_positives": 0
+      },
+      "DrDoS_UDP": {
+        "total_flows": 15122,
+        "detected": 15115,
+        "missed": 7,
+        "detection_rate": 0.999537,
+        "false_positives": 0
+      },
+      "Syn": {
+        "total_flows": 15115,
+        "detected": 14942,
+        "missed": 173,
+        "detection_rate": 0.988554,
+        "false_positives": 0
+      },
+      "TFTP": {
+        "total_flows": 15070,
+        "detected": 14991,
+        "missed": 79,
+        "detection_rate": 0.994758,
+        "false_positives": 0
+      }
+    }
+  },
+  "detection_stats": {
+    "xgb_detections": 150024,
+    "xgb_early_exit": 0,
+    "bdap_detections": 1312,
+    "trad_detections": 0,
+    "qtn_detections": 0,
+    "consensus_detections": 0,
+    "triple_consensus": 0,
+    "suspicious_temporal": 0,
+    "suspicious_spatial": 1312,
+    "critical_anomaly": 0,
+    "heuristic_detections": 0,
+    "override_benign": 0,
+    "total_benign": 348664
+  },
+  "T-RAD": {
+    "model_name": "T-RAD",
+    "timestamp": "2026-05-02T09:57:43.449612",
+    "total_samples": 500000,
+    "confusion_matrix": {
+      "TP": 0,
+      "TN": 350238,
+      "FP": 0,
+      "FN": 149762
+    },
+    "classification_metrics": {
+      "accuracy": 0.700476,
+      "precision": 0,
+      "recall": 0.0,
+      "f1_score": 0,
+      "fpr": 0.0,
+      "fnr": 1.0,
+      "specificity": 1.0,
+      "mcc": 0
+    },
+    "per_attack_metrics": {
+      "BENIGN": {
+        "total_flows": 350238,
+        "detected": 0,
+        "missed": 0,
+        "detection_rate": 0,
+        "false_positives": 0
+      },
+      "DrDoS_DNS": {
+        "total_flows": 14918,
+        "detected": 0,
+        "missed": 14918,
+        "detection_rate": 0.0,
+        "false_positives": 0
+      },
+      "DrDoS_LDAP": {
+        "total_flows": 14925,
+        "detected": 0,
+        "missed": 14925,
+        "detection_rate": 0.0,
+        "false_positives": 0
+      },
+      "DrDoS_MSSQL": {
+        "total_flows": 14958,
+        "detected": 0,
+        "missed": 14958,
+        "detection_rate": 0.0,
+        "false_positives": 0
+      },
+      "DrDoS_NTP": {
+        "total_flows": 14693,
+        "detected": 0,
+        "missed": 14693,
+        "detection_rate": 0.0,
+        "false_positives": 0
+      },
+      "DrDoS_NetBIOS": {
+        "total_flows": 14924,
+        "detected": 0,
+        "missed": 14924,
+        "detection_rate": 0.0,
+        "false_positives": 0
+      },
+      "DrDoS_SNMP": {
+        "total_flows": 15189,
+        "detected": 0,
+        "missed": 15189,
+        "detection_rate": 0.0,
+        "false_positives": 0
+      },
+      "DrDoS_SSDP": {
+        "total_flows": 14848,
+        "detected": 0,
+        "missed": 14848,
+        "detection_rate": 0.0,
+        "false_positives": 0
+      },
+      "DrDoS_UDP": {
+        "total_flows": 15122,
+        "detected": 0,
+        "missed": 15122,
+        "detection_rate": 0.0,
+        "false_positives": 0
+      },
+      "Syn": {
+        "total_flows": 15115,
+        "detected": 0,
+        "missed": 15115,
+        "detection_rate": 0.0,
+        "false_positives": 0
+      },
+      "TFTP": {
+        "total_flows": 15070,
+        "detected": 0,
+        "missed": 15070,
+        "detection_rate": 0.0,
+        "false_positives": 0
+      }
+    }
+  }
+}

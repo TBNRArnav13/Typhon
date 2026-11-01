@@ -1,0 +1,122 @@
+[
+  {
+    "attack_type": "DrDoS_DNS",
+    "total_samples": 99932,
+    "caught": 99679,
+    "detection_rate": 99.75,
+    "caught_by_xgb": 99665,
+    "caught_by_bdap": 0,
+    "caught_by_transformer": 28,
+    "caught_by_consensus": 0,
+    "caught_by_heuristics": 0,
+    "caught_by_qtn": 0
+  },
+  {
+    "attack_type": "DrDoS_LDAP",
+    "total_samples": 99930,
+    "caught": 99927,
+    "detection_rate": 100.0,
+    "caught_by_xgb": 99927,
+    "caught_by_bdap": 0,
+    "caught_by_transformer": 0,
+    "caught_by_consensus": 0,
+    "caught_by_heuristics": 0,
+    "caught_by_qtn": 0
+  },
+  {
+    "attack_type": "DrDoS_MSSQL",
+    "total_samples": 99969,
+    "caught": 99964,
+    "detection_rate": 99.99,
+    "caught_by_xgb": 99964,
+    "caught_by_bdap": 0,
+    "caught_by_transformer": 0,
+    "caught_by_consensus": 0,
+    "caught_by_heuristics": 0,
+    "caught_by_qtn": 0
+  },
+  {
+    "attack_type": "DrDoS_NetBIOS",
+    "total_samples": 99962,
+    "caught": 99954,
+    "detection_rate": 99.99,
+    "caught_by_xgb": 99954,
+    "caught_by_bdap": 0,
+    "caught_by_transformer": 0,
+    "caught_by_consensus": 0,
+    "caught_by_heuristics": 0,
+    "caught_by_qtn": 0
+  },
+  {
+    "attack_type": "DrDoS_NTP",
+    "total_samples": 98858,
+    "caught": 95100,
+    "detection_rate": 96.2,
+    "caught_by_xgb": 93038,
+    "caught_by_bdap": 0,
+    "caught_by_transformer": 4124,
+    "caught_by_consensus": 0,
+    "caught_by_heuristics": 0,
+    "caught_by_qtn": 0
+  },
+  {
+    "attack_type": "DrDoS_SNMP",
+    "total_samples": 99973,
+    "caught": 99963,
+    "detection_rate": 99.99,
+    "caught_by_xgb": 99963,
+    "caught_by_bdap": 0,
+    "caught_by_transformer": 0,
+    "caught_by_consensus": 0,
+    "caught_by_heuristics": 0,
+    "caught_by_qtn": 0
+  },
+  {
+    "attack_type": "DrDoS_SSDP",
+    "total_samples": 99960,
+    "caught": 99955,
+    "detection_rate": 99.99,
+    "caught_by_xgb": 99955,
+    "caught_by_bdap": 0,
+    "caught_by_transformer": 0,
+    "caught_by_consensus": 0,
+    "caught_by_heuristics": 0,
+    "caught_by_qtn": 0
+  },
+  {
+    "attack_type": "Syn",
+    "total_samples": 99964,
+    "caught": 12990,
+    "detection_rate": 12.99,
+    "caught_by_xgb": 12707,
+    "caught_by_bdap": 438,
+    "caught_by_transformer": 34,
+    "caught_by_consensus": 47,
+    "caught_by_heuristics": 0,
+    "caught_by_qtn": 47
+  },
+  {
+    "attack_type": "TFTP",
+    "total_samples": 99875,
+    "caught": 99841,
+    "detection_rate": 99.97,
+    "caught_by_xgb": 99841,
+    "caught_by_bdap": 0,
+    "caught_by_transformer": 0,
+    "caught_by_consensus": 0,
+    "caught_by_heuristics": 0,
+    "caught_by_qtn": 0
+  },
+  {
+    "attack_type": "DrDoS_UDP",
+    "total_samples": 99929,
+    "caught": 99892,
+    "detection_rate": 99.96,
+    "caught_by_xgb": 99890,
+    "caught_by_bdap": 0,
+    "caught_by_transformer": 4,
+    "caught_by_consensus": 0,
+    "caught_by_heuristics": 0,
+    "caught_by_qtn": 0
+  }
+]
